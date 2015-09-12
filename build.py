@@ -5,13 +5,7 @@ import os
 Turns a path into a unique variable name
 '''
 def PathToVar(path):
-	dirPath, filePath = os.path.split(path)
-	pieces = [filePath.replace('.', '_')]
-	while dirPath != '':
-		head, tail = os.path.split(dirPath)
-		pieces.insert(0, tail)
-		dirPath = head
-	return '_'.join(pieces)
+	return '_'.join('_'.join('_'.join(path.split('/')).split('\\')).split('.'))
 
 '''
 Makes the environment variables for the preprocessor
@@ -28,17 +22,17 @@ def GetEnvironmentVariables():
 	for subdir, dirs, files in os.walk(res):
 		for fileName in files:
 			if fileName != 'loading.js':
-				abspath = os.path.join(os.path.relpath(subdir, root), fileName)
+				abspath = os.path.relpath(subdir, root) + '/' + fileName
 				if subdir == res:
 					respath = fileName
 				else:
-					respath = os.path.join(os.path.relpath(subdir, res), fileName)
+					respath = os.path.relpath(subdir, res) + '/' + fileName
 				env['resources'][PathToVar(respath)] = abspath
 	
 	for subdir, dirs, files in os.walk(src):
 		for fileName in files:
 			if fileName.find('.template') == -1:
-				env['sources'].append(os.path.join(os.path.relpath(subdir, root), fileName))
+				env['sources'].append(os.path.relpath(subdir, root) + '/' + fileName)
 	
 	return env
 
