@@ -1,5 +1,6 @@
 var res = {
-	HelloWorld_png: "res/HelloWorld.png"
+	HelloWorld_png: "res/HelloWorld.png",
+	TileMap_tmx: "res/TileMap.tmx"
 };
 
 var g_resources = [];

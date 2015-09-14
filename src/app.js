@@ -35,6 +35,8 @@ var HelloWorldLayer = cc.Layer.extend({
         var tileMap = new cc.TMXTiledMap("res/TileMap.tmx");
         this.addChild(tileMap,0);
 
+        cc.log(tileMap);
+
         return true;
     }
 });
