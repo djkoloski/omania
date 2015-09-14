@@ -13,6 +13,8 @@
 	"jsList" : [
 		"src/app.js",
 		"src/resource.js",
-		"src/collision.js"
+		"src/collision.js",
+		"src/entities/soldier.js",
+		"src/scenes/collisiontest.js"
 	]
 }
