@@ -53,6 +53,7 @@ var TextBoxLayer = cc.Layer.extend({
 		this.currentIndex = 0;
 		this.timer = 0.0;
 		this.label = new cc.LabelTTF('', 'Arial', 20);
+        this.label.setColor(0,0,0,0);
 		this.background = new cc.Sprite(res.Textbox_png);
 		
 		this.addChild(this.label, 5);
