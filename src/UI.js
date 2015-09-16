@@ -40,6 +40,7 @@ var TextBoxLayer = cc.Layer.extend({
     ctor : function(){
         //1. call super class's ctor function
         this._super();
+        this.scheduleUpdate ();
     },
 
         //EXPERIMENTING WITH PAUSE- IGNORE
@@ -62,8 +63,15 @@ var TextBoxLayer = cc.Layer.extend({
         //this.subscribeUpdate();
 
     displayText: function(string) {
-        console.log(string);
-        UI.currentText=string;
+        //console.log(string);
+        this.textBuffer+=string;
+
+        if (string!="") {
+            UI.currentText = " ";
+        }
+        else{
+            UI.currentText="";
+        }
 
         //2. get the screen size of your game canvas
         var winsize = cc.director.getWinSize();
@@ -99,15 +107,48 @@ var TextBoxLayer = cc.Layer.extend({
 
         this.spritebg = new cc.Sprite(res.Textbox_png);
 
+        this.textBuffer="";
+
+        this.spaceLeftOnLine=27;
+
+        this.numLinesUsed=0;
+
+        this.time_since=0;
+
         this.displayText("");
 
         this.addChild(this.helloLabel, 5);
 
         this.addChild(this.spritebg);
+    },
+    update: function(dt) {
+        if (this.textBuffer=="") return;
+        console.log(this.time_since);
+        this.time_since+=dt;
+        if (this.time_since<.05) return;
+        else this.time_since=0;
+
+        if (this.numLinesUsed==5){
+            UI.currentText=" ";
+            this.numLinesUsed=0;
+        }
+        //now that that's out of the way...
+        UI.currentText+=this.textBuffer[0];
+        this.textBuffer=this.textBuffer.slice(1);
+        this.spaceLeftOnLine-=1;
+        this.helloLabel.setString(UI.currentText);
+        if (this.spaceLeftOnLine<=0 && (UI.currentText[UI.currentText.length-1]==' '
+            ||UI.currentText[UI.currentText.length-1]=='\n')){
+            UI.currentText+="\n";
+            this.spaceLeftOnLine=27;
+            this.numLinesUsed+=1;
+        }
+        //if (this.spaceLeftOnLine<-5){
+        //    UI.currentText+="\n";
+        //    this.spaceLeftOnLine=33;
+        //    this.numLinesUsed+=1;
+        //}
     }
-    //update: function(dt) {
-        //...
-    //}
 });
 
 /*References:
@@ -116,6 +157,7 @@ var TextBoxLayer = cc.Layer.extend({
 
 Next steps:
     Make the string disappear after a certain time
-    SET TIMEOUT
-    CANCEL TIMEOUT
+        SET TIMEOUT
+        CANCEL TIMEOUT
+    More importantly, make text animatedly appear
 */
