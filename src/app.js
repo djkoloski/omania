@@ -16,7 +16,7 @@ var HelloWorldLayer = cc.Layer.extend({
         // 3. add your codes below...
         // add a label shows "Hello World"
         // create and initialize a label
-        var helloLabel = new cc.LabelTTF("Hello World", "Arial", 38);
+        var helloLabel = new cc.LabelTTF("Textbox Demo", "Arial", 38);
         // position the label on the center of the screen
         helloLabel.x = size.width / 2;
         helloLabel.y = size.height / 2 + 200;
@@ -36,10 +36,15 @@ var HelloWorldLayer = cc.Layer.extend({
 });
 
 var HelloWorldScene = cc.Scene.extend({
+    layer: null,
+    textLayer: null,
     onEnter:function () {
         this._super();
-        var layer = new HelloWorldLayer();
-        this.addChild(layer);
+        this.layer = new HelloWorldLayer();
+        this.addChild(this.layer);
+        this.textLayer= new TextBoxLayer();
+        this.textLayer.init();
+        this.addChild(this.textLayer);
     }
 });
 

@@ -12,6 +12,7 @@
 
 	"jsList" : [
 		"src/app.js",
-		"src/resource.js"
+		"src/resource.js",
+		"src/UI.js"
 	]
 }
