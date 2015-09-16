@@ -1,5 +1,6 @@
 import re
 import os
+import Image
 
 '''
 Turns a path into a unique variable name
@@ -8,10 +9,40 @@ def PathToVar(path):
 	return '_'.join('_'.join('_'.join(path.split('/')).split('\\')).split('.'))
 
 '''
+Determines if a path is a file that needs preprocessing
+'''
+def IsPreprocessingRequired(path):
+	return re.match(r'.*\.template\..*', path) != None
+
+'''
+Determines if a path is a file that needs tile set expansion
+'''
+def IsTileSetExpansionRequired(path):
+	return re.match(r'.*\.tileset\..*', path) != None
+
+'''
+Determines if a path is an ignored file and should be excluded from resource loading
+'''
+def IsIgnoredFile(path):
+	ignoredFiles = [
+		r'.*loading\.js'
+	]
+	
+	if IsPreprocessingRequired(path) or IsTileSetExpansionRequired(path):
+		return True
+	
+	for pattern in ignoredFiles:
+		if re.match(pattern, path):
+			return True
+	return False
+
+'''
 Makes the environment variables for the preprocessor
 '''
 def GetEnvironmentVariables():
 	env = {}
+	env['preprocess'] = []
+	env['tilesetexpansion'] = []
 	env['resources'] = {}
 	env['sources'] = []
 	
@@ -21,18 +52,28 @@ def GetEnvironmentVariables():
 	
 	for subdir, dirs, files in os.walk(res):
 		for fileName in files:
-			if fileName != 'loading.js':
-				abspath = os.path.relpath(subdir, root) + '/' + fileName
-				if subdir == res:
-					respath = fileName
-				else:
-					respath = os.path.relpath(subdir, res) + '/' + fileName
+			abspath = os.path.relpath(subdir, root) + '/' + fileName
+			if subdir == res:
+				respath = fileName
+			else:
+				respath = os.path.relpath(subdir, res) + '/' + fileName
+			
+			if IsPreprocessingRequired(abspath):
+				env['preprocess'].append(abspath)
+			if IsTileSetExpansionRequired(abspath):
+				env['tilesetexpansion'].append(abspath)
+			if not IsIgnoredFile(abspath):
 				env['resources'][PathToVar(respath)] = abspath
 	
 	for subdir, dirs, files in os.walk(src):
 		for fileName in files:
-			if fileName.find('.template') == -1:
-				env['sources'].append(os.path.relpath(subdir, root) + '/' + fileName)
+			abspath = os.path.relpath(subdir, root) + '/' + fileName
+			if IsPreprocessingRequired(abspath):
+				env['preprocess'].append(abspath)
+			if IsTileSetExpansionRequired(abspath):
+				env['tilesetexpansion'].append(abspath)
+			if not IsIgnoredFile(fileName):
+				env['sources'].append(abspath)
 	
 	return env
 
@@ -75,7 +116,39 @@ def Preprocess(path, env):
 	with open(path.replace('.template', ''), 'w') as output_file:
 		output_file.write(content)
 
+'''
+Expands the tiles in a tile set by 1 pixel on each edge
+'''
+def ExpandTileSet(path):
+	img = Image.open(path)
+	width, height = img.size
+	newWidth, newHeight = (width / 32 * 34, height / 32 * 34)
+	
+	outimg = Image.new('RGBA', (width / 32 * 34, height / 32 * 34))
+	
+	for y in xrange(newHeight):
+		yindex = y % 34
+		if yindex > 0:
+			yindex -= 1
+		if yindex > 31:
+			yindex -= 1
+		for x in xrange(newWidth):
+			xindex = x % 34
+			if xindex > 0:
+				xindex -= 1
+			if xindex > 31:
+				xindex -= 1
+			outimg.putpixel((x, y), img.getpixel((xindex + x // 34 * 32, yindex + y // 34 * 32)))
+	
+	outPath = path.replace('.tileset', '')
+	outimg.save(outPath)
+
 if __name__ == '__main__':
 	env = GetEnvironmentVariables()
-	Preprocess(os.path.join('src', 'resource.template.js'), env)
 	Preprocess('project.template.json', env)
+	
+	for template in env['preprocess']:
+		Preprocess(template, env)
+	
+	for tileset in env['tilesetexpansion']:
+		ExpandTileSet(tileset)
