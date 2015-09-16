@@ -16,6 +16,7 @@ var HelloWorldLayer = cc.Layer.extend({
         // 3. add your codes below...
         // add a label shows "Hello World"
         // create and initialize a label
+        /*
         var helloLabel = new cc.LabelTTF("Hello World", "Arial", 38);
         // position the label on the center of the screen
         helloLabel.x = size.width / 2;
@@ -30,6 +31,11 @@ var HelloWorldLayer = cc.Layer.extend({
             y: size.height / 2
         });
         this.addChild(this.sprite, 0);
+        */
+        var tileMap = new cc.TMXTiledMap("res/TileGameResources/TileMap.tmx");
+        this.addChild(tileMap,0);
+
+        cc.log(tileMap);
 
         return true;
     }
