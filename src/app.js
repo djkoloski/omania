@@ -33,10 +33,6 @@ var HelloWorldLayer = cc.Layer.extend({
         this.addChild(this.sprite, 0);
         */
         var tileMap = new cc.TMXTiledMap("res/TileGameResources/TileMap.tmx");
-        cc.log(tileMap);
-        for (var i = 0; i < tileMap.getChildren().length; ++i) {
-        	tileMap.getChildren()[i].getTexture().setAntiAliasTexParameters();
-        }
         this.addChild(tileMap,0);
 
         cc.log(tileMap);
