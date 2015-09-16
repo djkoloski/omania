@@ -127,7 +127,6 @@ var TextBoxLayer = cc.Layer.extend({
 			else {
 				chop = nextNewline;
 				endDialog = true;
-				console.log('end dialog');
 			}
 			if (chop == -1) {
 				chop = string.length;
