@@ -11,6 +11,7 @@
 	"modules" : ["cocos2d","chipmunk"],
 
 	"jsList" : [
+		"src/UI.js",
 		"src/app.js",
 		"src/resource.js",
 		"src/collision.js",
