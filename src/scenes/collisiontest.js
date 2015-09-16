@@ -64,11 +64,16 @@ var CollisionTestLayer = cc.Layer.extend({
 				case 1:
 					this.soldiers[i].target = new cp.v(40 + Math.floor(i / 5) * 70, 40 + i % 5 * 70);
 					break;
+				case 2:
+
+					this.soldiers[i].target = new cp.v(cc.winSize.width/2 + i % 2 * 60, 40 + Math.floor(i/2) * 60);
 				default:
 					break;
 			}
 		}
-		this.formation = (this.formation + 1) % 2;
+		//this.formation = (this.formation + 1) % 2;
+		this.formation++;
+		if (this.formation > 2) {this.formation = 0;}
 	}
 });
 
