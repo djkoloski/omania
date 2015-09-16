@@ -3,7 +3,8 @@ var res = {
 	TileGameResources_tmw_desert_spacing_png: "res/TileGameResources/tmw_desert_spacing.png",
 	TileGameResources_Player_png: "res/TileGameResources/Player.png",
 	HelloWorld_png: "res/HelloWorld.png",
-	TileGameResources_TileMap_tmx: "res/TileGameResources/TileMap.tmx"
+	TileGameResources_TileMap_tmx: "res/TileGameResources/TileMap.tmx",
+	TimeMap_tmx: "res/TileMap.tmx"
 };
 
 var g_resources = [];

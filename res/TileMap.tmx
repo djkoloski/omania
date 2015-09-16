@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<map version="1.0" orientation="orthogonal" renderorder="left-down" width="20" height="40" tilewidth="32" tileheight="32" nextobjectid="43">
+ <tileset firstgid="1" name="Sample" tilewidth="32" tileheight="32" spacing="1" margin="1" tilecount="48">
+  <image source="TileGameResources/tmw_desert_spacing.png" width="272" height="204"/>
+ </tileset>
+ <layer name="Background" width="20" height="40">
+  <data encoding="base64" compression="zlib">
+   eJztlTEOgDAIRVEn42DUO3j/I8pmQ7T8wDcuDG+w0ZdfinQQkZHEpMzKSmIpX/nKR/GdDVlf64n47Dfec8SHZER9dp3hy+Z7Ilo/dN+Z/kMo37c+7/+P5GP72pzezIrWjzUPvHd6+Tzn376e8+1M0H6xsyp7vsjdlumX8t2+TdlJHMoFVnIxjg==
+  </data>
+ </layer>
+ <objectgroup name="Bushes">
+  <object id="1" x="238" y="815" height="2"/>
+  <object id="33" x="222" y="800" width="32" height="32"/>
+  <object id="34" x="257" y="800" width="32" height="32"/>
+  <object id="35" x="266" y="809" width="1" height="1"/>
+  <object id="39" x="257" y="836" width="32" height="26"/>
+  <object id="40" x="293" y="865" width="156" height="29"/>
+  <object id="41" x="451" y="926" width="28" height="130"/>
+  <object id="42" x="292" y="1086" width="91" height="30"/>
+ </objectgroup>
+</map>

@@ -32,8 +32,15 @@ var HelloWorldLayer = cc.Layer.extend({
         });
         this.addChild(this.sprite, 0);
         */
-        var tileMap = new cc.TMXTiledMap("res/TileGameResources/TileMap.tmx");
+        var tileMap = new cc.TMXTiledMap("res/TileMap.tmx");
         this.addChild(tileMap,0);
+
+        var objects = [];
+        objects = tileMap.getObjectGroup("Bushes").getObjects();
+        for (var i = 0; i < objects.length; i++){
+            console.log(objects[i].x);
+            console.log(","+objects[i].y);
+        }
 
         cc.log(tileMap);
 
