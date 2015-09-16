@@ -132,13 +132,19 @@ var TextBoxLayer = cc.Layer.extend({
             UI.currentText=" ";
             this.numLinesUsed=0;
         }
-        //now that that's out of the way...
+
         UI.currentText+=this.textBuffer[0];
         this.textBuffer=this.textBuffer.slice(1);
         this.spaceLeftOnLine-=1;
         this.helloLabel.setString(UI.currentText);
-        if (this.spaceLeftOnLine<=0 && (UI.currentText[UI.currentText.length-1]==' '
-            ||UI.currentText[UI.currentText.length-1]=='\n')){
+        last_char_in=UI.currentText[UI.currentText.length-1];
+
+        if (last_char_in=="\n"){
+            this.spaceLeftOnLine=27;
+            this.numLinesUsed+=1;
+        }
+
+        if (this.spaceLeftOnLine<=0 && last_char_in==' '){
             UI.currentText+="\n";
             this.spaceLeftOnLine=27;
             this.numLinesUsed+=1;
