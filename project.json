@@ -11,12 +11,12 @@
 	"modules" : ["cocos2d","chipmunk"],
 
 	"jsList" : [
-		"src/UI.js",
-		"src/app.js",
 		"src/resource.js",
-		"src/collision.js",
 		"src/youtube.js",
+		"src/sultan.js",
 		"src/entities/soldier.js",
-		"src/scenes/collisiontest.js"
+		"src/scenes/gameScene.js",
+		"src/layers/dialogLayer.js",
+		"src/layers/gameLayer.js"
 	]
 }
