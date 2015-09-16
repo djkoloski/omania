@@ -22,7 +22,7 @@ var HelloWorldScene = cc.Scene.extend({
         this._super();
         this.layer = new HelloWorldLayer();
         this.addChild(this.layer);
-        this.textLayer= new TextBoxLayer();
+        this.textLayer = new TextBoxLayer();
         this.textLayer.init();
         this.addChild(this.textLayer);
     }

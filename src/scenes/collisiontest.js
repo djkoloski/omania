@@ -2,6 +2,7 @@ var CollisionTestLayer = cc.Layer.extend({
 	soldiers: null,
 	space: null,
 	formation: 0,
+	textBoxLayer: null,
 	ctor: function(space) {
 		this._super();
 		
@@ -44,6 +45,9 @@ var CollisionTestLayer = cc.Layer.extend({
 		cc.eventManager.addListener(touchListener, this);
 		cc.eventManager.addListener(keyListener, this);
 		
+		this.textBoxLayer = new TextBoxLayer();
+		this.addChild(this.textBoxLayer);
+		
 		return true;
 	},
 	onTouchBegan: function(touch, event) {
@@ -70,14 +74,15 @@ var CollisionTestLayer = cc.Layer.extend({
 
 var CollisionTestScene = cc.Scene.extend({
 	space: null,
+	layer: null,
 	onEnter: function() {
 		this._super();
 		
 		this.initPhysics();
 		
-		var layer = new CollisionTestLayer(this.space);
+		this.layer = new CollisionTestLayer(this.space);
 		
-		this.addChild(layer);
+		this.addChild(this.layer);
 		
 		this.scheduleUpdate();
 	},
