@@ -1,6 +1,6 @@
 import re
 import os
-import Image
+from PIL import Image
 
 '''
 Turns a path into a unique variable name
