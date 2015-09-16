@@ -12,20 +12,16 @@
  *          or
  *      UI.display("your text here");
  *   If you set it to "", the text box disappears! Magic!
- *   Shoot for a max of 33 characters on a line, 5 lines.
+ *   for Arial at size 20, I shoot for a max of 33 characters on a
+ *   line, 5 lines in the textbox. The fitting of text is based on
+ *   the filler textbox image I used.
+ *
+ *   You are welcome to try to format the text yourself using
+ *   \n. The code will either graciously accept your suggestions
+ *   or graciously ignore you.
  *
  */
-/*UI 'class'*/
-/* Here's a fake header file to help you visualize the 'class'
-UI{
-    string currentText="";
-    //boolean paused=false;
 
-    void display(string x){}
-        //Sets currentText of UI to x.
-}
-
- */
 var UI= {"currentText":"Hello whale", "paused":false};
 
 //we begin the UI class with a function to
