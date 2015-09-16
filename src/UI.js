@@ -48,7 +48,6 @@ var TextBoxLayer = cc.Layer.extend({
 		this._super();
 		
 		this.state = this.STATE.CLOSED;
-		this.displayText = '';
 		this.dialogs = [];
 		this.currentDialog = 0;
 		this.currentIndex = 0;
@@ -61,25 +60,6 @@ var TextBoxLayer = cc.Layer.extend({
 		
 		this.scheduleUpdate();
 	},
-
-		//EXPERIMENTING WITH PAUSE- IGNORE
-		//cc.eventManager.addListener(
-		//	{
-		//		event: cc.EventListener.KEYBOARD,
-		//		onKeyPressed: function (key, event) {
-		//			console.log("key=" + key.toString());
-		//			if (key.toString()==27 && cc.director.isPaused())
-		//				cc.director.resume();
-		//			if (key.toString()==27) cc.director.pause();
-		//		}
-		//	}, this);
-		//
-		//if (cc.director.isPaused){
-		//	console.log("isPaused");
-		//}
-		//else console.log("isn't Paused")
-
-		//this.subscribeUpdate();
 	transitionState: function(newState) {
 		this.state = newState;
 		switch (newState) {
