@@ -13,7 +13,6 @@
 	"jsList" : [
 		"src/UI.js",
 		"src/app.js",
-		"src/sultan",
 		"src/resource.js",
 		"src/collision.js",
 		"src/youtube.js",
