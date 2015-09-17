@@ -9,6 +9,15 @@ def PathToVar(path):
 	return '_'.join('_'.join('_'.join(path.split('/')).split('\\')).split('.'))
 
 '''
+Normalizes a path to UNIX-style paths
+'''
+def NormalizePath(path):
+	if os.name == 'nt':
+		return path.replace('\\', '/')
+	else:
+		return path
+
+'''
 Determines if a path is a file that needs preprocessing
 '''
 def IsPreprocessingRequired(path):
@@ -52,28 +61,28 @@ def GetEnvironmentVariables():
 	
 	for subdir, dirs, files in os.walk(res):
 		for fileName in files:
-			abspath = os.path.relpath(subdir, root) + '/' + fileName
+			abspath = os.path.join(os.path.relpath(subdir, root), fileName)
 			if subdir == res:
 				respath = fileName
 			else:
-				respath = os.path.relpath(subdir, res) + '/' + fileName
+				respath = os.path.join(os.path.relpath(subdir, res), fileName)
 			
 			if IsPreprocessingRequired(abspath):
 				env['preprocess'].append(abspath)
 			if IsTileSetExpansionRequired(abspath):
 				env['tilesetexpansion'].append(abspath)
 			if not IsIgnoredFile(abspath):
-				env['resources'][PathToVar(respath)] = abspath
+				env['resources'][PathToVar(respath)] = NormalizePath(abspath)
 	
 	for subdir, dirs, files in os.walk(src):
 		for fileName in files:
-			abspath = os.path.relpath(subdir, root) + '/' + fileName
+			abspath = os.path.join(os.path.relpath(subdir, root), fileName)
 			if IsPreprocessingRequired(abspath):
 				env['preprocess'].append(abspath)
 			if IsTileSetExpansionRequired(abspath):
 				env['tilesetexpansion'].append(abspath)
 			if not IsIgnoredFile(fileName):
-				env['sources'].append(abspath)
+				env['sources'].append(NormalizePath(abspath))
 	
 	return env
 
