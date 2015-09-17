@@ -3,22 +3,12 @@
  */
 /*README:
  * What to know about these additions:
- *  -The only important change in app.js are the lines
- *	  var textLayer= new TextBoxLayer();
- *	  textLayer.init();
- *	  this.addChild(textLayer);
  *  -to use the textbox, run the function
- *	  setDisplayText("whatever the heck you want!");
- *		  or
- *	  UI.display("your text here");
- *   If you set it to "", the text box disappears! Magic!
- *   for Arial at size 20, I shoot for a max of 33 characters on a
- *   line, 5 lines in the textbox. The fitting of text is based on
- *   the filler textbox image I used.
+ *	  openDialog("whatever the heck you want");
+ *   It will run format and run your text AND disappear! Magic!
  *
- *   You are welcome to try to format the text yourself using
- *   \n. The code will either graciously accept your suggestions
- *   or graciously ignore you.
+ *   You can set a breakpoint after which the next text will appear
+ *   in a clear window by typing '\n'
  *
  */
 var TextBoxLayer = cc.Layer.extend({
@@ -35,7 +25,7 @@ var TextBoxLayer = cc.Layer.extend({
 	CLOSING_TIME: 0.5,
 	CLOSED_OFFSET_Y: -100,
 	OPEN_OFFSET_Y: 100,
-	LINE_LENGTH: 27,
+	LINE_LENGTH: 100,
 	LINES_PER_DIALOG: 4,
 	state: null,
 	dialogs: null,
@@ -55,6 +45,7 @@ var TextBoxLayer = cc.Layer.extend({
 		this.label = new cc.LabelTTF('', 'Arial', 20);
 		this.label.setColor(0,0,0,0);
 		this.background = new cc.Sprite(res.Textbox_png);
+		this.callBack=null;
 		
 		this.addChild(this.label, 5);
 		this.addChild(this.background);
@@ -85,18 +76,20 @@ var TextBoxLayer = cc.Layer.extend({
 				this.setLabelText('');
 				this.timer = 0.0;
 				this.setYOffset(this.CLOSED_OFFSET_Y);
+				if (this.callBack!=null) this.callBack();
 				break;
 			default:
 				throw new Error('Invalid transition state');
 				break;
 		}
 	},
-	openDialog: function(string) {
+	openDialog: function(string, F) {
 		this.dialogs = [];
 		var lines = [];
 		var line = '';
 		var index = 0;
 		var toomany = 0;
+		this.callBack=F;
 		while (index < string.length) {
 			var nextSpace = string.indexOf(' ', index);
 			var nextNewline = string.indexOf('\n', index);
@@ -137,6 +130,57 @@ var TextBoxLayer = cc.Layer.extend({
 				break;
 		}
 		
+		this.currentDialog = 0;
+		this.currentIndex = 0;
+		this.transitionState(this.STATE.OPENING);
+	},
+	openDialog: function(string, F) {
+		this.dialogs = [];
+		var lines = [];
+		var line = '';
+		var index = 0;
+		var toomany = 0;
+		this.callBack=F;
+		while (index < string.length) {
+			var nextSpace = string.indexOf(' ', index);
+			var nextNewline = string.indexOf('\n', index);
+
+			var chop = 0;
+			var endDialog = false;
+			if (nextSpace != -1 && (nextSpace < nextNewline || nextNewline == -1))
+				chop = nextSpace;
+			else {
+				chop = nextNewline;
+				endDialog = true;
+			}
+			if (chop == -1) {
+				chop = string.length;
+				endDialog = true;
+			} else
+				chop += 1;
+
+			var delta = chop - index;
+
+			if (line.length + delta > this.LINE_LENGTH) {
+				lines.push(line);
+				line = '';
+			}
+			line = (line + string.substring(index, chop)).replace('\n', '');
+			if (endDialog) {
+				lines.push(line);
+				line = '';
+				this.dialogs.push(lines.join('\n'));
+				lines = [];
+			}
+			if (lines.length >= this.LINES_PER_DIALOG)
+				this.dialogs.push(lines.splice(0, this.LINES_PER_DIALOG).join('\n'));
+			index = chop;
+
+			++toomany;
+			if (toomany > 1000)
+				break;
+		}
+
 		this.currentDialog = 0;
 		this.currentIndex = 0;
 		this.transitionState(this.STATE.OPENING);
