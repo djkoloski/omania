@@ -2,7 +2,7 @@ var g_resolutionWidth = 1024;
 var g_resolutionHeight = 768;
 
 cc.game.onStart = function(){
-	var startScene = CollisionTestScene;
+	var startScene = GameScene;
 	
     if(!cc.sys.isNative && document.getElementById("cocosLoading")) //If referenced loading.js, please remove it
         document.body.removeChild(document.getElementById("cocosLoading"));
