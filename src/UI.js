@@ -16,6 +16,9 @@
  *   res.anySpeakerSprite_png );//or _jpg, of course.
  *   >>Make your speakerSprite 130x130, please.<<
  *
+ *   Speaker sprite can appear on either side. Change which side it
+ *   goes on by changing this.ON_YOUR_LEFT (so false puts it on right)
+ *
  */
 var TextBoxLayer = cc.Layer.extend({
 	STATE: {
@@ -33,7 +36,7 @@ var TextBoxLayer = cc.Layer.extend({
 	OPEN_OFFSET_Y: 100,
 	LINE_LENGTH: 70,
 	LINES_PER_DIALOG: 4,
-	ON_YOUR_LEFT: true,
+	ON_YOUR_LEFT: false,
 	SPEAKER_SPRITE_OFFSET: 400,
 	state: null,
 	dialogs: null,
