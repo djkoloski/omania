@@ -1,4 +1,4 @@
 frameworks
-.idea
-project.json
-src/resource.js
+*.idea
+*project.json
+*src/resource.js
