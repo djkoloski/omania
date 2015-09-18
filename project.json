@@ -2,7 +2,7 @@
 	"project_type": "javascript",
 
 	"debugMode" : 1,
-	"showFPS" : true,
+	"showFPS" : false,
 	"frameRate" : 60,
 	"id" : "gameCanvas",
 	"renderMode" : 0,
@@ -14,9 +14,10 @@
 		"src/app.js",
 		"src/collision.js",
 		"src/resource.js",
+		"src/sultan",
 		"src/UI.js",
 		"src/youtube.js",
-		"src\entities/soldier.js",
-		"src\scenes/collisiontest.js"
+		"src/entities/soldier.js",
+		"src/scenes/collisiontest.js"
 	]
 }
