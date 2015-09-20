@@ -2,6 +2,10 @@ var CollisionTestLayer = cc.Layer.extend({
 	soldiers: null,
 	space: null,
 	formation: 0,
+	mouseLocX: 0,
+	mouseLocY: 0,
+	formX: 40 + i % 5 * 70,
+	formY: 40 + Math.floor(i / 5) * 70,
 	textBoxLayer: null,
 	ctor: function(space) {
 		this._super();
@@ -30,50 +34,76 @@ var CollisionTestLayer = cc.Layer.extend({
 		layerNameLabel.y = size.height - labelSize.height;
 		
 		this.addChild(layerNameLabel, 5);
-		
-		var touchListener = cc.EventListener.create({
-			event: cc.EventListener.TOUCH_ONE_BY_ONE,
-			swallowTouches: true,
-			onTouchBegan: this.onTouchBegan.bind(this)
-		});
+
 		var keyListener = cc.EventListener.create({
 			event: cc.EventListener.KEYBOARD,
 			onKeyPressed: this.onKeyPressed.bind(this)
 		});
+		var mouseListener = cc.EventListener.create({
+			event: cc.EventListener.MOUSE,
+			onMouseMove: this.onMouseMove.bind(this)
+		});
 		
 		this.isKeyboardEnabled = true;
-		cc.eventManager.addListener(touchListener, this);
 		cc.eventManager.addListener(keyListener, this);
+		cc.eventManager.addListener(mouseListener, this);
 		
 		this.textBoxLayer = new TextBoxLayer();
 		this.addChild(this.textBoxLayer);
 		
 		return true;
 	},
-	onTouchBegan: function(touch, event) {
-		for (var i = 0; i < this.soldiers.length; ++i) {
-			this.soldiers[i].target = new cp.v(touch.getLocationX(), touch.getLocationY());
-		}
-	},
-	onKeyPressed: function(key, event) {
-		for (var i = 0; i < this.soldiers.length; ++i) {
-			switch (this.formation) {
-				case 0:
-					this.soldiers[i].target = new cp.v(40 + i % 5 * 70, 40 + Math.floor(i / 5) * 70);
-					break;
-				case 1:
-					this.soldiers[i].target = new cp.v(40 + Math.floor(i / 5) * 70, 40 + i % 5 * 70);
-					break;
-				case 2:
 
-					this.soldiers[i].target = new cp.v(cc.winSize.width/2 + i % 2 * 60, 40 + Math.floor(i/2) * 60);
+	onKeyPressed: function(key, event) {
+
+		for (var i = 0; i < this.soldiers.length; ++i) {
+			switch (key) {
+				case cc.KEY.q:
+					this.soldiers[i].target = new cp.v(this.mouseLocX - 150 + i % 5 * 65, this.mouseLocY + Math.floor(i / 5) * 65);
+					this.formation = 0;
+					break;
+				case cc.KEY.w:
+					if (i < this.soldiers.length/2) {
+						this.soldiers[i].target = new cp.v((this.mouseLocX - 325) + i % 3 * 65, this.mouseLocY + Math.floor(i/3) * 65);
+					}
+					else {
+						this.soldiers[i].target = new cp.v((this.mouseLocX + 195) + (i-this.soldiers.length/2)%3 * 65, this.mouseLocY + Math.floor((i-this.soldiers.length/2)/3) * 65);
+					}
+					this.formation = 1;
+					break;
+				case cc.KEY.e:
+					this.soldiers[i].target = new cp.v(this.mouseLocX - 30 + i % 2 * 65, this.mouseLocY + Math.floor(i/2) * 65);
+					this.formation = 2;
+					break;
 				default:
 					break;
 			}
 		}
-		//this.formation = (this.formation + 1) % 2;
-		this.formation++;
-		if (this.formation > 2) {this.formation = 0;}
+	},
+	onMouseMove: function(mouse, event) {
+
+		this.mouseLocX = mouse.getLocationX();
+		this.mouseLocY = mouse.getLocationY();
+
+		for (var i = 0; i < this.soldiers.length; ++i) {
+			switch (this.formation) {
+				case 0:
+					this.soldiers[i].target = new cp.v(this.mouseLocX - 150 + i % 5 * 65, this.mouseLocY + Math.floor(i / 5) * 65);
+					break;
+				case 1:
+					if (i < this.soldiers.length/2) {
+						this.soldiers[i].target = new cp.v((this.mouseLocX - 325) + i % 3 * 65, this.mouseLocY + Math.floor(i/3) * 65);
+					}
+					else {
+						this.soldiers[i].target = new cp.v((this.mouseLocX + 195) + (i-this.soldiers.length/2)%3 * 65, this.mouseLocY + Math.floor((i-this.soldiers.length/2)/3) * 65);
+					}
+					break;
+				case 2:
+					this.soldiers[i].target = new cp.v(this.mouseLocX - 30 + i % 2 * 65, this.mouseLocY + Math.floor(i/2) * 65);
+				default:
+					break;
+			}
+		}
 	}
 });
 
