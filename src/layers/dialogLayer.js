@@ -1,27 +1,6 @@
-/**
- * Created by kortrk on 9/12/2015.
- */
-/*README:
- * What to know about these additions:
- *  -The only important change in app.js are the lines
- *	  var textLayer= new TextBoxLayer();
- *	  textLayer.init();
- *	  this.addChild(textLayer);
- *  -to use the textbox, run the function
- *	  setDisplayText("whatever the heck you want!");
- *		  or
- *	  UI.display("your text here");
- *   If you set it to "", the text box disappears! Magic!
- *   for Arial at size 20, I shoot for a max of 33 characters on a
- *   line, 5 lines in the textbox. The fitting of text is based on
- *   the filler textbox image I used.
- *
- *   You are welcome to try to format the text yourself using
- *   \n. The code will either graciously accept your suggestions
- *   or graciously ignore you.
- *
- */
-var TextBoxLayer = cc.Layer.extend({
+var DialogLayer = cc.Layer.extend({
+	DIALOG_BACKGROUND_ORDER: 100,
+	DIALOG_TEXT_ORDER: 101,
 	STATE: {
 		OPENING: 0,
 		OPEN: 1,
@@ -37,6 +16,7 @@ var TextBoxLayer = cc.Layer.extend({
 	OPEN_OFFSET_Y: 100,
 	LINE_LENGTH: 27,
 	LINES_PER_DIALOG: 4,
+	scene: null,
 	state: null,
 	dialogs: null,
 	currentDialog: null,
@@ -44,8 +24,10 @@ var TextBoxLayer = cc.Layer.extend({
 	timer: null,
 	label: null,
 	background: null,
-	ctor: function(){
+	ctor: function(scene){
 		this._super();
+		
+		this.scene = scene;
 		
 		this.state = this.STATE.CLOSED;
 		this.dialogs = [];
@@ -56,8 +38,8 @@ var TextBoxLayer = cc.Layer.extend({
 		this.label.setColor(0,0,0,0);
 		this.background = new cc.Sprite(res.Textbox_png);
 		
-		this.addChild(this.label, 5);
-		this.addChild(this.background);
+		this.addChild(this.label, this.DIALOG_TEXT_ORDER);
+		this.addChild(this.background, this.DIALOG_BACKGROUND_ORDER);
 		
 		this.scheduleUpdate();
 	},
@@ -206,14 +188,3 @@ var TextBoxLayer = cc.Layer.extend({
 		}
 	}
 });
-
-/*References:
-	textBoxLayer:
-		http://cocos2d-x.org/docs/tutorial/framework/html5/parkour-game-with-javascript-v3.0/chapter3/en
-
-Next steps:
-	Make the string disappear after a certain time
-		SET TIMEOUT
-		CANCEL TIMEOUT
-	More importantly, make text animatedly appear
-*/

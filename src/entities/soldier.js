@@ -1,6 +1,9 @@
 var Soldier = cc.Node.extend({
 	space: null,
+	phalanx: null,
+	index: null,
 	target: null,
+	formationCenter: null,
 	sprite: null,
 	body: null,
 	shape: null,
@@ -8,11 +11,14 @@ var Soldier = cc.Node.extend({
 	mass: 1,
 	springConstant: 300,
 	damping: 0.5,
-	ctor: function(space, startX, startY, targetX, targetY) {
+	ctor: function(space, phalanx, index) {
 		this._super();
 		
 		this.space = space;
-		this.target = cp.v(targetX, targetY);
+		this.phalanx = phalanx;
+		this.index = index;
+		this.target = cp.v((2 * this.phalanx - 7) * 40, this.index * 40 + 50);
+		this.formationCenter = cp.v(0, 0);
 		
 		this.sprite = new cc.PhysicsSprite(res.target50x50_png);
 		var contentSize = this.sprite.getContentSize();
@@ -25,7 +31,7 @@ var Soldier = cc.Node.extend({
 		
 		this.sprite.setBody(this.body);
 		
-		this.body.p = cc.p(startX, startY);
+		this.body.p = cc.p(this.target.x, this.target.y);
 		
 		this.addChild(this.sprite, 0);
 		
@@ -34,7 +40,7 @@ var Soldier = cc.Node.extend({
 		return true;
 	},
 	update: function(dt) {
-		var toBody = cp.v.sub(this.body.p, this.target);
+		var toBody = cp.v.sub(this.body.p, cp.v.add(this.target, this.formationCenter));
 		var x = cp.v.len(toBody);
 		var v = cp.v.normalize(toBody);
 		var c = this.damping * 2 * Math.sqrt(this.mass * this.springConstant);
@@ -55,5 +61,8 @@ var Soldier = cc.Node.extend({
 			)
 		);
 		this.body.applyImpulse(impulse, cp.vzero);
+	},
+	setFormationCenter: function(centerX, centerY) {
+		this.formationCenter = cp.v(centerX, centerY);
 	}
 });
