@@ -4,9 +4,9 @@ var Soldier = cc.Node.extend({
 	sprite: null,
 	body: null,
 	shape: null,
-	radius: 33,
+	radius: 32,
 	mass: 1,
-	springConstant: 100,
+	springConstant: 300,
 	damping: 0.5,
 	ctor: function(space, startX, startY, targetX, targetY) {
 		this._super();

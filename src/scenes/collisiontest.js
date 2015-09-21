@@ -39,14 +39,16 @@ var CollisionTestLayer = cc.Layer.extend({
 			event: cc.EventListener.KEYBOARD,
 			onKeyPressed: this.onKeyPressed.bind(this)
 		});
+		/*
 		var mouseListener = cc.EventListener.create({
 			event: cc.EventListener.MOUSE,
 			onMouseMove: this.onMouseMove.bind(this)
 		});
+		*/
 		
 		this.isKeyboardEnabled = true;
 		cc.eventManager.addListener(keyListener, this);
-		cc.eventManager.addListener(mouseListener, this);
+		//cc.eventManager.addListener(mouseListener, this);
 		
 		this.textBoxLayer = new TextBoxLayer();
 		this.addChild(this.textBoxLayer);
@@ -56,30 +58,32 @@ var CollisionTestLayer = cc.Layer.extend({
 
 	onKeyPressed: function(key, event) {
 
+		var size = cc.winSize;
+
 		for (var i = 0; i < this.soldiers.length; ++i) {
 			switch (key) {
-				case cc.KEY.q:
-					this.soldiers[i].target = new cp.v(this.mouseLocX - 150 + i % 5 * 65, this.mouseLocY + Math.floor(i / 5) * 65);
+				case cc.KEY.a:
+					this.soldiers[i].target = new cp.v((32) +  i % 2 * 64, (96) + Math.floor(i / 2) * 64);
 					this.formation = 0;
 					break;
-				case cc.KEY.w:
-					if (i < this.soldiers.length/2) {
-						this.soldiers[i].target = new cp.v((this.mouseLocX - 325) + i % 3 * 65, this.mouseLocY + Math.floor(i/3) * 65);
-					}
-					else {
-						this.soldiers[i].target = new cp.v((this.mouseLocX + 195) + (i-this.soldiers.length/2)%3 * 65, this.mouseLocY + Math.floor((i-this.soldiers.length/2)/3) * 65);
-					}
+				case cc.KEY.d:
+					this.soldiers[i].target = new cp.v((size.width - 96) +  i % 2 * 64, (96) + Math.floor(i / 2) * 64);
 					this.formation = 1;
 					break;
-				case cc.KEY.e:
-					this.soldiers[i].target = new cp.v(this.mouseLocX - 30 + i % 2 * 65, this.mouseLocY + Math.floor(i/2) * 65);
+				case cc.KEY.w:
+					this.soldiers[i].target = new cp.v((size.width/4) + i % 10 * 64, (size.height - 96) + Math.floor(i/10) * 64);
 					this.formation = 2;
+					break;
+				case cc.KEY.s:
+					this.soldiers[i].target = new cp.v((size.width/4) + i % 10 * 64, (96) + Math.floor(i/10) * 64);
+					this.formation = 3;
 					break;
 				default:
 					break;
 			}
 		}
 	},
+	/*
 	onMouseMove: function(mouse, event) {
 
 		this.mouseLocX = mouse.getLocationX();
@@ -105,6 +109,7 @@ var CollisionTestLayer = cc.Layer.extend({
 			}
 		}
 	}
+	*/
 });
 
 var CollisionTestScene = cc.Scene.extend({
