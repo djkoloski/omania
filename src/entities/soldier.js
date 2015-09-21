@@ -7,7 +7,7 @@ var Soldier = cc.Node.extend({
 	sprite: null,
 	body: null,
 	shape: null,
-	radius: 32,
+	radius: 17,
 	mass: 1,
 	springConstant: 300,
 	damping: 0.5,
@@ -20,7 +20,7 @@ var Soldier = cc.Node.extend({
 		this.target = cp.v((2 * this.phalanx - 7) * 40, this.index * 40 + 50);
 		this.formationCenter = cp.v(0, 0);
 		
-		this.sprite = new cc.PhysicsSprite(res.target50x50_png);
+		this.sprite = new cc.PhysicsSprite(res.target34x34_png);
 		var contentSize = this.sprite.getContentSize();
 		
 		this.body = new cp.Body(this.mass, cp.momentForBox(this.mass, contentSize.width, contentSize.height));
