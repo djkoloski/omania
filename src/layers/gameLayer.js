@@ -93,13 +93,13 @@ var GameLayer = cc.Layer.extend({
 			case this.FORMATION.LEFT:
 				for (var i = 0; i < this.soldiers.length; ++i) {
 					var soldier = this.soldiers[i];
-					soldier.target = new cp.v((32) +  i % 2 * 64, (96) + Math.floor(i / 2) * 64);
+					soldier.target = new cp.v((32) +  i % 2 * 64, (32) + Math.floor(i / 2) * 64);
 				}
 				break;
 			case this.FORMATION.RIGHT:
 				for (var i = 0; i < this.soldiers.length; ++i) {
 					var soldier = this.soldiers[i];
-					soldier.target = new cp.v((size.width - 96) +  i % 2 * 64, (96) + Math.floor(i / 2) * 64);
+					soldier.target = new cp.v((size.width - 96) +  i % 2 * 64, (32) + Math.floor(i / 2) * 64);
 				}
 				break;
 			case this.FORMATION.TOP:
@@ -112,7 +112,7 @@ var GameLayer = cc.Layer.extend({
 			case this.FORMATION.TOP:
 				for (var i = 0; i < this.soldiers.length; ++i) {
 					var soldier = this.soldiers[i];
-					soldier.target = new cp.v((32) + i % 12 * 96, (96) + Math.floor(i/12) * 64);
+					soldier.target = new cp.v((32) + i % 12 * 96, (32) + Math.floor(i/12) * 64);
 				}
 			default:
 				break;
