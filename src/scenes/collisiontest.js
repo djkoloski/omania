@@ -15,7 +15,7 @@ var CollisionTestLayer = cc.Layer.extend({
 		
 		var size = cc.winSize;
 		
-		for (var i = 0; i < 20; ++i) {
+		for (var i = 0; i < 24; ++i) {
 			var soldier = new Soldier(
 				this.space,
 				40 + i % 5 * 70,
@@ -75,7 +75,7 @@ var CollisionTestLayer = cc.Layer.extend({
 					this.formation = 2;
 					break;
 				case cc.KEY.s:
-					this.soldiers[i].target = new cp.v((size.width/4) + i % 10 * 64, (96) + Math.floor(i/10) * 64);
+					this.soldiers[i].target = new cp.v((32) + i % 12 * 96, (96) + Math.floor(i/12) * 64);
 					this.formation = 3;
 					break;
 				default:
