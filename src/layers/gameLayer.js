@@ -22,14 +22,6 @@ var GameLayer = cc.Layer.extend({
 		this.initTileMap();
 		this.setFormation(this.FORMATION.CLUMP_CENTER);
 
-		/*
-		var mouseListener = cc.EventListener.create({
-			event: cc.EventListener.MOUSE,
-			onMouseMove: function(event) {
-				this.requestFormationCenter(event.getLocationX(), event.getLocationY());
-			}.bind(this)
-		});
-		*/
 		var keyListener = cc.EventListener.create({
 			event: cc.EventListener.KEYBOARD,
 			onKeyPressed: function(key, event) {
@@ -38,11 +30,11 @@ var GameLayer = cc.Layer.extend({
 		});
 		
 		this.isKeyboardEnabled = true;
-		//cc.eventManager.addListener(mouseListener, this);
 		cc.eventManager.addListener(keyListener, this);
 		
 		return true;
 	},
+	// Initialize soldiers
 	initSoldiers: function() {
 		this.soldiers = [];
 		
@@ -63,12 +55,7 @@ var GameLayer = cc.Layer.extend({
 		this.tileMap = new cc.TMXTiledMap('res/TileGameResources/TileMap.tmx');
 		this.addChild(this.tileMap, this.TILE_MAP_ORDER);
 	},
-	/*
-	requestFormationCenter: function(x, y) {
-		for (var i = 0; i < this.soldiers.length; ++i)
-			this.soldiers[i].setFormationCenter(x, y);
-	},
-	*/
+	// Takes key press and calls functions to set corresponding formation
 	requestFormationType: function(key) {
 		console.log(key);
 		switch (key) {
@@ -91,6 +78,7 @@ var GameLayer = cc.Layer.extend({
 				break;
 		}
 	},
+	// Sets the formation of the soldiers
 	setFormation: function(formation) {
 
 		var size = cc.winSize;
