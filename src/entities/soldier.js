@@ -1,37 +1,23 @@
 var Soldier = cc.Node.extend({
-	space: null,
-	phalanx: null,
-	index: null,
+	MASS: 1,
+	SPRINGCONSTANT: 300,
+	DAMPING: 0.5,
+	RADIUS: 17,
+	scene: null,
 	target: null,
-	formationCenter: null,
 	sprite: null,
-	body: null,
-	shape: null,
-	radius: 17,
-	mass: 1,
-	springConstant: 300,
-	damping: 0.5,
-	ctor: function(space, phalanx, index) {
+	rigidbody: null,
+	ctor: function(scene) {
 		this._super();
 		
-		this.space = space;
-		this.phalanx = phalanx;
-		this.index = index;
-		this.target = cp.v((2 * this.phalanx - 7) * 40, this.index * 40 + 50);
-		this.formationCenter = cp.v(0, 0);
+		this.scene = scene;
+		this.target = vec2();
 		
-		this.sprite = new cc.PhysicsSprite(res.target34x34_png);
-		var contentSize = this.sprite.getContentSize();
+		this.sprite = new cc.Sprite(res.target34x34_png);
 		
-		this.body = new cp.Body(this.mass, cp.momentForBox(this.mass, contentSize.width, contentSize.height));
-		this.shape = new cp.CircleShape(this.body, this.radius, cp.vzero);
-		
-		this.space.addBody(this.body);
-		this.space.addShape(this.shape);
-		
-		this.sprite.setBody(this.body);
-		
-		this.body.p = cc.p(this.target.x, this.target.y);
+		this.rigidbody = new Rigidbody();
+		this.rigidbody.setMass(this.MASS);
+		// TODO set initial position
 		
 		this.addChild(this.sprite, 0);
 		
@@ -39,30 +25,13 @@ var Soldier = cc.Node.extend({
 		
 		return true;
 	},
-	update: function(dt) {
-		var toBody = cp.v.sub(this.body.p, cp.v.add(this.target, this.formationCenter));
-		var x = cp.v.len(toBody);
-		var v = cp.v.normalize(toBody);
-		var c = this.damping * 2 * Math.sqrt(this.mass * this.springConstant);
-		var impulse = cp.v.add(
-			cp.v.add(
-				cp.v.mult(
-					v,
-					-this.springConstant * x * dt
-				),
-				cp.v.mult(
-					cp.v(this.body.vx, this.body.vy),
-					-c * dt
-				)
-			),
-			cp.v(
-				Math.random() * 10,
-				Math.random() * 10
-			)
-		);
-		this.body.applyImpulse(impulse, cp.vzero);
+	setTarget: function(target) {
+		vec2.copy(this.target, target);
 	},
-	setFormationCenter: function(centerX, centerY) {
-		this.formationCenter = cp.v(centerX, centerY);
+	update: function(dt) {
+		this.rigidbody.addSpringForce(this.target, this.SPRINGCONSTANT, this.DAMPING);
+		
+		this.rigidbody.update(dt);
+		this.sprite.setPosition(vec2.point(this.rigidbody.position));
 	}
 });

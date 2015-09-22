@@ -6,22 +6,27 @@ var GameLayer = cc.Layer.extend({
 		TOP: 3,
 		BOTTOM:4
 	},
+	NUM_SOLDIERS: 64,
 	TILE_MAP_ORDER: 0,
 	SOLDIER_ORDER: 50,
+	EDGE_OFFSET: 32,
+	SOLDIER_SPACING: 60,
 	scene: null,
-	tileMap: null,
+	background: null,
 	soldiers: null,
 	formation: null,
-	formationCenter: null,
 	ctor: function(scene) {
 		this._super();
 		
 		this.scene = scene;
 		
+		this.background = new cc.Sprite(res.warnings_outside_png);
+		this.background.setPosition(cc.winSize.width / 2, cc.winSize.height / 2);
+		this.addChild(this.background, 0);
+		
 		this.initSoldiers();
-		this.initTileMap();
 		this.setFormation(this.FORMATION.CLUMP_CENTER);
-
+		
 		var keyListener = cc.EventListener.create({
 			event: cc.EventListener.KEYBOARD,
 			onKeyPressed: function(key, event) {
@@ -38,22 +43,10 @@ var GameLayer = cc.Layer.extend({
 	initSoldiers: function() {
 		this.soldiers = [];
 		
-		for (var i = 0; i < 24; ++i) {
-			var x = Math.floor(i / 3);
-			var y = i % 3;
-			this.soldiers.push(
-				new Soldier(
-					this.scene.space,
-					x,
-					y
-				)
-			);
+		for (var i = 0; i < this.NUM_SOLDIERS; ++i) {
+			this.soldiers.push(new Soldier(this.scene));
 			this.addChild(this.soldiers[i], this.SOLDIER_ORDER);
 		}
-	},
-	initTileMap: function() {
-		this.tileMap = new cc.TMXTiledMap('res/TileGameResources/TileMap.tmx');
-		this.addChild(this.tileMap, this.TILE_MAP_ORDER);
 	},
 	// Takes key press and calls functions to set corresponding formation
 	requestFormationType: function(key) {
@@ -80,40 +73,96 @@ var GameLayer = cc.Layer.extend({
 	},
 	// Sets the formation of the soldiers
 	setFormation: function(formation) {
-
+		// Shuffle the soldiers
+		for (var i = 0; i < this.soldiers.length - 2; ++i) {
+			var j = Math.floor(Math.random() * (this.soldiers.length - i)) + i;
+			var temp = this.soldiers[i];
+			this.soldiers[i] = this.soldiers[j];
+			this.soldiers[j] = temp;
+		}
+		
 		var size = cc.winSize;
 
 		switch (formation) {
 			case this.FORMATION.CLUMP_CENTER:
 				for (var i = 0; i < this.soldiers.length; ++i) {
-					var soldier = this.soldiers[i];
-					soldier.target = new cp.v(size.width/2, size.height/2);
+					var layer = Math.ceil(Math.sqrt(9 + 12 * i) / 6 - 0.5);
+					if (layer == 0)
+						this.soldiers[i].setTarget(vec2(size.width / 2, size.height / 2));
+					else {
+						var prevLayer = layer - 1;
+						var index = i - (3 * Math.pow(prevLayer, 2) + 3 * prevLayer + 1);
+						var angle = index % 3 * 2 + Math.floor(index % 6 / 3);
+						var offset = Math.floor(index / 6);
+						this.soldiers[i].setTarget(
+							vec2(
+								size.width / 2 + (Math.cos(Math.PI / 3 * angle) * layer + Math.cos(Math.PI / 3 * (angle + 2)) * offset) * this.SOLDIER_SPACING,
+								size.height / 2 + (Math.sin(Math.PI / 3 * angle) * layer + Math.sin(Math.PI / 3 * (angle + 2)) * offset) * this.SOLDIER_SPACING
+							)
+						);
+					}
 				}
 				break;
 			case this.FORMATION.LEFT:
+				var height = Math.floor(cc.winSize.height / (this.SOLDIER_SPACING + 1));
+				var width = Math.ceil(this.soldiers.length / height);
 				for (var i = 0; i < this.soldiers.length; ++i) {
-					var soldier = this.soldiers[i];
-					soldier.target = new cp.v((32) +  i % 2 * 64, (32) + Math.floor(i / 2) * 64);
+					var x = Math.floor(i / height);
+					var y = i % height;
+					var inLine = Math.min(this.soldiers.length - x * height, height);
+					this.soldiers[i].setTarget(
+						vec2(
+							this.EDGE_OFFSET + x * this.SOLDIER_SPACING,
+							cc.winSize.height / (inLine + 1) * (y + 1)
+						)
+					);
 				}
 				break;
 			case this.FORMATION.RIGHT:
+				var height = Math.floor(cc.winSize.height / (this.SOLDIER_SPACING + 1));
+				var width = Math.ceil(this.soldiers.length / height);
 				for (var i = 0; i < this.soldiers.length; ++i) {
-					var soldier = this.soldiers[i];
-					soldier.target = new cp.v((size.width - 96) +  i % 2 * 64, (32) + Math.floor(i / 2) * 64);
-				}
-				break;
-			case this.FORMATION.TOP:
-				for (var i = 0; i < this.soldiers.length; ++i) {
-					var soldier = this.soldiers[i];
-					soldier.target = new cp.v((32) + i % 12 * 96, (size.height - 96) + Math.floor(i/12) * 64);
+					var x = Math.floor(i / height);
+					var y = i % height;
+					var inLine = Math.min(this.soldiers.length - x * height, height);
+					this.soldiers[i].setTarget(
+						vec2(
+							cc.winSize.width - this.EDGE_OFFSET - x * this.SOLDIER_SPACING,
+							cc.winSize.height / (inLine + 1) * (y + 1)
+						)
+					);
 				}
 				break;
 			case this.FORMATION.BOTTOM:
-			case this.FORMATION.TOP:
+				var width = Math.floor(cc.winSize.width / (this.SOLDIER_SPACING + 1));
+				var height = Math.ceil(this.soldiers.length / height);
 				for (var i = 0; i < this.soldiers.length; ++i) {
-					var soldier = this.soldiers[i];
-					soldier.target = new cp.v((32) + i % 12 * 96, (32) + Math.floor(i/12) * 64);
+					var y = Math.floor(i / width);
+					var x = i % width;
+					var inLine = Math.min(this.soldiers.length - y * width, width);
+					this.soldiers[i].setTarget(
+						vec2(
+							cc.winSize.width / (inLine + 1) * (x + 1),
+							this.EDGE_OFFSET + y * this.SOLDIER_SPACING
+						)
+					);
 				}
+				break;
+			case this.FORMATION.TOP:
+				var width = Math.floor(cc.winSize.width / (this.SOLDIER_SPACING + 1));
+				var height = Math.ceil(this.soldiers.length / height);
+				for (var i = 0; i < this.soldiers.length; ++i) {
+					var y = Math.floor(i / width);
+					var x = i % width;
+					var inLine = Math.min(this.soldiers.length - y * width, width);
+					this.soldiers[i].setTarget(
+						vec2(
+							cc.winSize.width / (inLine + 1) * (x + 1),
+							cc.winSize.height - this.EDGE_OFFSET - y * this.SOLDIER_SPACING
+						)
+					);
+				}
+				break;
 			default:
 				break;
 		}
