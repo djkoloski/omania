@@ -6,6 +6,7 @@ var Soldier = cc.Node.extend({
 	scene: null,
 	target: null,
 	sprite: null,
+	spriteAnimation: null,
 	rigidbody: null,
 	ctor: function(scene) {
 		this._super();
@@ -13,13 +14,14 @@ var Soldier = cc.Node.extend({
 		this.scene = scene;
 		this.target = vec2();
 		
-		this.sprite = new cc.Sprite(res.target34x34_png);
+		this.sprite = new cc.Sprite();
+		this.spriteAnimation = cc.animate(res.spritesheet_soldiers_png_anim);
+		this.sprite.runAction(this.spriteAnimation);
+		this.addChild(this.sprite, 0);
 		
 		this.rigidbody = new Rigidbody();
 		this.rigidbody.setMass(this.MASS);
 		// TODO set initial position
-		
-		this.addChild(this.sprite, 0);
 		
 		this.scheduleUpdate();
 		

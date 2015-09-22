@@ -17,6 +17,8 @@ cc.game.onStart = function() {
 	cc.view.resizeWithBrowserSize(true);
 	//load resources
 	cc.LoaderScene.preload(g_resources, function () {
+		Init();
+		
 		window.scene = new startScene();
 		cc.director.runScene(window.scene);
 	}, this);
