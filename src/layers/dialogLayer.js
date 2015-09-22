@@ -36,7 +36,7 @@ var DialogLayer = cc.Layer.extend({
 		this.timer = 0.0;
 		this.label = new cc.LabelTTF('', 'Arial', 20);
 		this.label.setColor(0,0,0,0);
-		this.background = new cc.Sprite(res.Textbox_png);
+		this.background = new cc.Sprite(res.castle_textbox_png);
 		this.setYOffset(DialogLayer.prototype.CLOSED_OFFSET_Y);
 		
 		this.addChild(this.label, DialogLayer.prototype.DIALOG_TEXT_ORDER);
@@ -108,10 +108,8 @@ var DialogLayer = cc.Layer.extend({
 			if (endDialog) {
 				lines.push(line);
 				line = '';
-				this.dialogs.push(lines.join('\n'));
-				lines = [];
 			}
-			if (lines.length >= DialogLayer.prototype.LINES_PER_DIALOG)
+			if (endDialog || lines.length >= DialogLayer.prototype.LINES_PER_DIALOG)
 				this.dialogs.push(lines.splice(0, DialogLayer.prototype.LINES_PER_DIALOG).join('\n'));
 			index = chop;
 			
@@ -119,6 +117,9 @@ var DialogLayer = cc.Layer.extend({
 			if (toomany > 1000)
 				break;
 		}
+		
+		while (lines.length != 0)
+			this.dialogs.push(lines.splice(0, DialogLayer.prototype.LINES_PER_DIALOG).join('\n'));
 		
 		this.currentDialog = 0;
 		this.currentIndex = 0;
