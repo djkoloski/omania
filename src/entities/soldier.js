@@ -20,7 +20,7 @@ var Soldier = cc.Node.extend({
 		this.addChild(this.sprite, 0);
 		
 		this.rigidbody = new Rigidbody();
-		this.rigidbody.setMass(this.MASS);
+		this.rigidbody.setMass(Soldier.prototype.MASS);
 		// TODO set initial position
 		
 		this.scheduleUpdate();
@@ -31,7 +31,7 @@ var Soldier = cc.Node.extend({
 		vec2.copy(this.target, target);
 	},
 	update: function(dt) {
-		this.rigidbody.addSpringForce(this.target, this.SPRINGCONSTANT, this.DAMPING);
+		this.rigidbody.addSpringForce(this.target, Soldier.prototype.SPRINGCONSTANT, Soldier.prototype.DAMPING);
 		
 		this.rigidbody.update(dt);
 		this.sprite.setPosition(vec2.point(this.rigidbody.position));

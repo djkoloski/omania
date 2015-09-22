@@ -1,18 +1,17 @@
-var GameLayer = cc.Layer.extend({
-	FORMATION: {
-		CLUMP_CENTER: 0,
-		LEFT: 1,
-		RIGHT: 2,
-		TOP: 3,
-		BOTTOM:4
-	},
+var FORMATION = {
+	CLUMP_CENTER: 0,
+	LEFT: 1,
+	RIGHT: 2,
+	TOP: 3,
+	BOTTOM: 4
+};
+
+var SoldierLayer = cc.Layer.extend({
 	NUM_SOLDIERS: 64,
-	TILE_MAP_ORDER: 0,
 	SOLDIER_ORDER: 50,
 	EDGE_OFFSET: 32,
 	SOLDIER_SPACING: 60,
 	scene: null,
-	background: null,
 	soldiers: null,
 	formation: null,
 	ctor: function(scene) {
@@ -20,12 +19,8 @@ var GameLayer = cc.Layer.extend({
 		
 		this.scene = scene;
 		
-		this.background = new cc.Sprite(res.warnings_outside_png);
-		this.background.setPosition(cc.winSize.width / 2, cc.winSize.height / 2);
-		this.addChild(this.background, 0);
-		
 		this.initSoldiers();
-		this.setFormation(this.FORMATION.CLUMP_CENTER);
+		this.setFormation(FORMATION.CLUMP_CENTER);
 		
 		var keyListener = cc.EventListener.create({
 			event: cc.EventListener.KEYBOARD,
@@ -36,36 +31,33 @@ var GameLayer = cc.Layer.extend({
 		
 		this.isKeyboardEnabled = true;
 		cc.eventManager.addListener(keyListener, this);
-		
-		return true;
 	},
 	// Initialize soldiers
 	initSoldiers: function() {
 		this.soldiers = [];
 		
-		for (var i = 0; i < this.NUM_SOLDIERS; ++i) {
+		for (var i = 0; i < SoldierLayer.prototype.NUM_SOLDIERS; ++i) {
 			this.soldiers.push(new Soldier(this.scene));
-			this.addChild(this.soldiers[i], this.SOLDIER_ORDER);
+			this.addChild(this.soldiers[i], SoldierLayer.prototype.SOLDIER_ORDER);
 		}
 	},
 	// Takes key press and calls functions to set corresponding formation
 	requestFormationType: function(key) {
-		console.log(key);
 		switch (key) {
 			case cc.KEY.space: // Space
-				this.setFormation(this.FORMATION.CLUMP_CENTER);
+				this.setFormation(FORMATION.CLUMP_CENTER);
 				break;
 			case cc.KEY.a: // A
-				this.setFormation(this.FORMATION.LEFT);
+				this.setFormation(FORMATION.LEFT);
 				break;
 			case cc.KEY.d: // D
-				this.setFormation(this.FORMATION.RIGHT);
+				this.setFormation(FORMATION.RIGHT);
 				break;
 			case cc.KEY.w: // W
-				this.setFormation(this.FORMATION.TOP);
+				this.setFormation(FORMATION.TOP);
 				break;
 			case cc.KEY.s: // F
-				this.setFormation(this.FORMATION.BOTTOM);
+				this.setFormation(FORMATION.BOTTOM);
 				break;
 			default:
 				break;
@@ -84,7 +76,7 @@ var GameLayer = cc.Layer.extend({
 		var size = cc.winSize;
 
 		switch (formation) {
-			case this.FORMATION.CLUMP_CENTER:
+			case FORMATION.CLUMP_CENTER:
 				for (var i = 0; i < this.soldiers.length; ++i) {
 					var layer = Math.ceil(Math.sqrt(9 + 12 * i) / 6 - 0.5);
 					if (layer == 0)
@@ -96,15 +88,15 @@ var GameLayer = cc.Layer.extend({
 						var offset = Math.floor(index / 6);
 						this.soldiers[i].setTarget(
 							vec2(
-								size.width / 2 + (Math.cos(Math.PI / 3 * angle) * layer + Math.cos(Math.PI / 3 * (angle + 2)) * offset) * this.SOLDIER_SPACING,
-								size.height / 2 + (Math.sin(Math.PI / 3 * angle) * layer + Math.sin(Math.PI / 3 * (angle + 2)) * offset) * this.SOLDIER_SPACING
+								size.width / 2 + (Math.cos(Math.PI / 3 * angle) * layer + Math.cos(Math.PI / 3 * (angle + 2)) * offset) * SoldierLayer.prototype.SOLDIER_SPACING,
+								size.height / 2 + (Math.sin(Math.PI / 3 * angle) * layer + Math.sin(Math.PI / 3 * (angle + 2)) * offset) * SoldierLayer.prototype.SOLDIER_SPACING
 							)
 						);
 					}
 				}
 				break;
-			case this.FORMATION.LEFT:
-				var height = Math.floor(cc.winSize.height / (this.SOLDIER_SPACING + 1));
+			case FORMATION.LEFT:
+				var height = Math.floor(cc.winSize.height / (SoldierLayer.prototype.SOLDIER_SPACING + 1));
 				var width = Math.ceil(this.soldiers.length / height);
 				for (var i = 0; i < this.soldiers.length; ++i) {
 					var x = Math.floor(i / height);
@@ -112,14 +104,14 @@ var GameLayer = cc.Layer.extend({
 					var inLine = Math.min(this.soldiers.length - x * height, height);
 					this.soldiers[i].setTarget(
 						vec2(
-							this.EDGE_OFFSET + x * this.SOLDIER_SPACING,
+							SoldierLayer.prototype.EDGE_OFFSET + x * SoldierLayer.prototype.SOLDIER_SPACING,
 							cc.winSize.height / (inLine + 1) * (y + 1)
 						)
 					);
 				}
 				break;
-			case this.FORMATION.RIGHT:
-				var height = Math.floor(cc.winSize.height / (this.SOLDIER_SPACING + 1));
+			case FORMATION.RIGHT:
+				var height = Math.floor(cc.winSize.height / (SoldierLayer.prototype.SOLDIER_SPACING + 1));
 				var width = Math.ceil(this.soldiers.length / height);
 				for (var i = 0; i < this.soldiers.length; ++i) {
 					var x = Math.floor(i / height);
@@ -127,14 +119,14 @@ var GameLayer = cc.Layer.extend({
 					var inLine = Math.min(this.soldiers.length - x * height, height);
 					this.soldiers[i].setTarget(
 						vec2(
-							cc.winSize.width - this.EDGE_OFFSET - x * this.SOLDIER_SPACING,
+							cc.winSize.width - SoldierLayer.prototype.EDGE_OFFSET - x * SoldierLayer.prototype.SOLDIER_SPACING,
 							cc.winSize.height / (inLine + 1) * (y + 1)
 						)
 					);
 				}
 				break;
-			case this.FORMATION.BOTTOM:
-				var width = Math.floor(cc.winSize.width / (this.SOLDIER_SPACING + 1));
+			case FORMATION.BOTTOM:
+				var width = Math.floor(cc.winSize.width / (SoldierLayer.prototype.SOLDIER_SPACING + 1));
 				var height = Math.ceil(this.soldiers.length / height);
 				for (var i = 0; i < this.soldiers.length; ++i) {
 					var y = Math.floor(i / width);
@@ -143,13 +135,13 @@ var GameLayer = cc.Layer.extend({
 					this.soldiers[i].setTarget(
 						vec2(
 							cc.winSize.width / (inLine + 1) * (x + 1),
-							this.EDGE_OFFSET + y * this.SOLDIER_SPACING
+							SoldierLayer.prototype.EDGE_OFFSET + y * SoldierLayer.prototype.SOLDIER_SPACING
 						)
 					);
 				}
 				break;
-			case this.FORMATION.TOP:
-				var width = Math.floor(cc.winSize.width / (this.SOLDIER_SPACING + 1));
+			case FORMATION.TOP:
+				var width = Math.floor(cc.winSize.width / (SoldierLayer.prototype.SOLDIER_SPACING + 1));
 				var height = Math.ceil(this.soldiers.length / height);
 				for (var i = 0; i < this.soldiers.length; ++i) {
 					var y = Math.floor(i / width);
@@ -158,7 +150,7 @@ var GameLayer = cc.Layer.extend({
 					this.soldiers[i].setTarget(
 						vec2(
 							cc.winSize.width / (inLine + 1) * (x + 1),
-							cc.winSize.height - this.EDGE_OFFSET - y * this.SOLDIER_SPACING
+							cc.winSize.height - SoldierLayer.prototype.EDGE_OFFSET - y * SoldierLayer.prototype.SOLDIER_SPACING
 						)
 					);
 				}
@@ -166,5 +158,17 @@ var GameLayer = cc.Layer.extend({
 			default:
 				break;
 		}
+		
+		this.formation = formation;
+	},
+	removeByLambda: function(lambda) {
+		var newSoldiers = [];
+		for (var i = 0; i < this.soldiers.length; ++i) {
+			if (lambda(this.soldiers[i]))
+				this.removeChild(this.soldiers[i]);
+			else
+				newSoldiers.push(this.soldiers[i]);
+		}
+		this.soldiers = newSoldiers;
 	}
 });
