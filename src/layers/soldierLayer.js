@@ -170,5 +170,12 @@ var SoldierLayer = cc.Layer.extend({
 				newSoldiers.push(this.soldiers[i]);
 		}
 		this.soldiers = newSoldiers;
+
+		//GameOver condition
+		if (this.soldiers.length <= 0){
+			//cc.director.pushScene(GameScene);
+			cc.director.runScene(new GameOverScene);
+			console.log("GameOver");
+		}
 	}
 });

@@ -16,12 +16,12 @@ var GameOverLayer = cc.Layer.extend({
         goodbyeLabel.x = cc.winSize.width/2;
         goodbyeLabel.y = cc.winSize.height/2;
 
-        this.addChild(helloLabel, 5);
+        this.addChild(goodbyeLabel, 5);
     },
     endGame: function(key){
         if (key == cc.KEY.r) {
-            cc.director.pushScene(StartScene);
-            cc.director.popScene(GameScene);
+            //cc.director.pushScene(GameOverScene);
+            cc.director.runScene(new StartScene);
             console.log("Restart");
         }
     }
