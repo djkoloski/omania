@@ -2,7 +2,8 @@ var g_resolutionWidth = 1024;
 var g_resolutionHeight = 768;
 
 cc.game.onStart = function() {
-	var startScene = GameScene;
+	//var startScene = GameScene;
+	var startScene = StartScene;
 	
 	if(!cc.sys.isNative && document.getElementById("cocosLoading"))
 		document.body.removeChild(document.getElementById("cocosLoading"));
