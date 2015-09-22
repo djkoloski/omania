@@ -29,7 +29,7 @@ var DialogLayer = cc.Layer.extend({
 		
 		this.scene = scene;
 		
-		this.state = this.STATE.CLOSED;
+		this.state = DialogLayer.prototype.STATE.CLOSED;
 		this.dialogs = [];
 		this.currentDialog = 0;
 		this.currentIndex = 0;
@@ -37,36 +37,37 @@ var DialogLayer = cc.Layer.extend({
 		this.label = new cc.LabelTTF('', 'Arial', 20);
 		this.label.setColor(0,0,0,0);
 		this.background = new cc.Sprite(res.Textbox_png);
+		this.setYOffset(DialogLayer.prototype.CLOSED_OFFSET_Y);
 		
-		this.addChild(this.label, this.DIALOG_TEXT_ORDER);
-		this.addChild(this.background, this.DIALOG_BACKGROUND_ORDER);
+		this.addChild(this.label, DialogLayer.prototype.DIALOG_TEXT_ORDER);
+		this.addChild(this.background, DialogLayer.prototype.DIALOG_BACKGROUND_ORDER);
 		
 		this.scheduleUpdate();
 	},
 	transitionState: function(newState) {
 		this.state = newState;
 		switch (newState) {
-			case this.STATE.OPENING:
+			case DialogLayer.prototype.STATE.OPENING:
 				this.setLabelText('');
-				this.timer = this.OPENING_TIME;
-				this.setYOffset(this.CLOSED_OFFSET_Y);
+				this.timer = DialogLayer.prototype.OPENING_TIME;
+				this.setYOffset(DialogLayer.prototype.CLOSED_OFFSET_Y);
 				break;
-			case this.STATE.OPEN:
+			case DialogLayer.prototype.STATE.OPEN:
 				this.setLabelText('');
 				this.timer = 0.0;
 				this.currentIndex = 0;
-				this.setYOffset(this.OPEN_OFFSET_Y);
+				this.setYOffset(DialogLayer.prototype.OPEN_OFFSET_Y);
 				break;
 			case this.STATE.PAUSED:
-				this.timer = this.PAUSE_TIME;
+				this.timer = DialogLayer.prototype.PAUSE_TIME;
 				break;
 			case this.STATE.CLOSING:
-				this.timer = this.CLOSING_TIME;
+				this.timer = DialogLayer.prototype.CLOSING_TIME;
 				break;
 			case this.STATE.CLOSED:
 				this.setLabelText('');
 				this.timer = 0.0;
-				this.setYOffset(this.CLOSED_OFFSET_Y);
+				this.setYOffset(DialogLayer.prototype.CLOSED_OFFSET_Y);
 				break;
 			default:
 				throw new Error('Invalid transition state');
@@ -99,7 +100,7 @@ var DialogLayer = cc.Layer.extend({
 			
 			var delta = chop - index;
 			
-			if (line.length + delta > this.LINE_LENGTH) {
+			if (line.length + delta > DialogLayer.prototype.LINE_LENGTH) {
 				lines.push(line);
 				line = '';
 			}
@@ -110,8 +111,8 @@ var DialogLayer = cc.Layer.extend({
 				this.dialogs.push(lines.join('\n'));
 				lines = [];
 			}
-			if (lines.length >= this.LINES_PER_DIALOG)
-				this.dialogs.push(lines.splice(0, this.LINES_PER_DIALOG).join('\n'));
+			if (lines.length >= DialogLayer.prototype.LINES_PER_DIALOG)
+				this.dialogs.push(lines.splice(0, DialogLayer.prototype.LINES_PER_DIALOG).join('\n'));
 			index = chop;
 			
 			++toomany;
@@ -121,10 +122,10 @@ var DialogLayer = cc.Layer.extend({
 		
 		this.currentDialog = 0;
 		this.currentIndex = 0;
-		this.transitionState(this.STATE.OPENING);
+		this.transitionState(DialogLayer.prototype.STATE.OPENING);
 	},
 	closeDialog: function() {
-		this.transitionState(this.STATE.CLOSING);
+		this.transitionState(DialogLayer.prototype.STATE.CLOSING);
 	},
 	getCurrentDialog: function() {
 		return this.dialogs[this.currentDialog];
@@ -141,46 +142,46 @@ var DialogLayer = cc.Layer.extend({
 		this.timer -= dt;
 		if (this.timer < 0) {
 			switch (this.state) {
-				case this.STATE.OPENING:
-					this.transitionState(this.STATE.OPEN);
+				case DialogLayer.prototype.STATE.OPENING:
+					this.transitionState(DialogLayer.prototype.STATE.OPEN);
 					break;
-				case this.STATE.OPEN:
+				case DialogLayer.prototype.STATE.OPEN:
 					if (this.currentIndex >= this.getCurrentDialog().length)
-						this.transitionState(this.STATE.PAUSED);
+						this.transitionState(DialogLayer.prototype.STATE.PAUSED);
 					else {
 						++this.currentIndex;
 						this.setLabelText(this.getCurrentDialog().substr(0, this.currentIndex));
-						this.timer = this.NEXT_CHAR_TIME;
+						this.timer = DialogLayer.prototype.NEXT_CHAR_TIME;
 					}
 					break;
-				case this.STATE.PAUSED:
+				case DialogLayer.prototype.STATE.PAUSED:
 					if (this.currentDialog >= this.dialogs.length)
-						this.transitionState(this.STATE.CLOSING);
+						this.transitionState(DialogLayer.prototype.STATE.CLOSING);
 					else {
 						if (this.currentDialog < this.dialogs.length - 1) {
 							++this.currentDialog;
 							this.currentIndex = 0;
-							this.transitionState(this.STATE.OPEN);
+							this.transitionState(DialogLayer.prototype.STATE.OPEN);
 						} else
-							this.transitionState(this.STATE.CLOSING);
+							this.transitionState(DialogLayer.prototype.STATE.CLOSING);
 					}
 					break;
-				case this.STATE.CLOSING:
-					this.transitionState(this.STATE.CLOSED);
+				case DialogLayer.prototype.STATE.CLOSING:
+					this.transitionState(DialogLayer.prototype.STATE.CLOSED);
 					break;
-				case this.STATE.CLOSED:
+				case DialogLayer.prototype.STATE.CLOSED:
 					break;
 				default:
 					throw new Error('Invalid state');
 			}
 		} else {
-			var t = this.timer / this.OPENING_TIME;
+			var t = this.timer / DialogLayer.prototype.OPENING_TIME;
 			switch (this.state) {
-				case this.STATE.OPENING:
-					this.setYOffset(t * this.CLOSED_OFFSET_Y + (1.0 - t) * this.OPEN_OFFSET_Y);
+				case DialogLayer.prototype.STATE.OPENING:
+					this.setYOffset(t * DialogLayer.prototype.CLOSED_OFFSET_Y + (1.0 - t) * DialogLayer.prototype.OPEN_OFFSET_Y);
 					break;
-				case this.STATE.CLOSING:
-					this.setYOffset(t * this.OPEN_OFFSET_Y + (1.0 - t) * this.CLOSED_OFFSET_Y);
+				case DialogLayer.prototype.STATE.CLOSING:
+					this.setYOffset(t * DialogLayer.prototype.OPEN_OFFSET_Y + (1.0 - t) * DialogLayer.prototype.CLOSED_OFFSET_Y);
 					break;
 				default:
 					break;
