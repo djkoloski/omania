@@ -162,6 +162,7 @@ var SoldierLayer = cc.Layer.extend({
 		this.formation = formation;
 	},
 	removeByLambda: function(lambda) {
+		var oldLength = this.soldiers.length;
 		var newSoldiers = [];
 		for (var i = 0; i < this.soldiers.length; ++i) {
 			if (lambda(this.soldiers[i]))
@@ -170,6 +171,10 @@ var SoldierLayer = cc.Layer.extend({
 				newSoldiers.push(this.soldiers[i]);
 		}
 		this.soldiers = newSoldiers;
+
+		// Refresh formation after losing men
+		if (newSoldiers.length != oldLength)
+			this.setFormation(this.formation);
 
 		//GameOver condition
 		if (this.soldiers.length <= 0){
