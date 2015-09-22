@@ -5,7 +5,7 @@ var GameOverLayer = cc.Layer.extend({
         var keyListener = cc.EventListener.create({
             event: cc.EventListener.KEYBOARD,
             onKeyPressed: function(key, event) {
-                this.startGame(key);
+                this.endGame(key);
             }.bind(this)
         });
 
@@ -18,9 +18,10 @@ var GameOverLayer = cc.Layer.extend({
 
         this.addChild(helloLabel, 5);
     },
-    startGame: function(key){
+    endGame: function(key){
         if (key == cc.KEY.r) {
-            cc.director.getInstance().replaceScene(StartScene);
+            cc.director.pushScene(StartScene);
+            cc.director.popScene(GameScene);
             console.log("Restart");
         }
     }

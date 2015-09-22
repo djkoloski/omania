@@ -20,7 +20,8 @@ var StartLayer = cc.Layer.extend({
     },
     startGame: function(key){
         if (key == cc.KEY.space) {
-            cc.director.getInstance().replaceScene(GameScene);
+            cc.director.pushScene(GameScene);
+            cc.director.popScene(StartScene);
             console.log("Start");
         }
     }
