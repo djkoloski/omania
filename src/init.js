@@ -4,5 +4,5 @@ function Init() {
 	];
 	
 	for (var i = 0; i < sheets.length; ++i)
-		res[sheets[i] + '_anim'] = SpritesheetToAnimation(sheets[i], 34, 34, 0.05, 100);
+		res[sheets[i] + '_anim'] = SpritesheetToAnimation(sheets[i], 34, 34, 0.05);
 }

@@ -15,8 +15,8 @@ var Soldier = cc.Node.extend({
 		this.target = vec2();
 		
 		this.sprite = new cc.Sprite();
-		this.spriteAnimation = cc.animate(res.spritesheet_soldiers_png_anim);
-		this.sprite.runAction(this.spriteAnimation);
+		this.spriteAnimation = new cc.Animate(res.spritesheet_soldiers_png_anim);
+		this.sprite.runAction(new cc.RepeatForever(this.spriteAnimation));
 		this.addChild(this.sprite, 0);
 		
 		this.rigidbody = new Rigidbody();

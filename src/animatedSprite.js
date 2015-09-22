@@ -1,11 +1,10 @@
-function SpritesheetToAnimation(sheetName, frameWidth, frameHeight, delay, loops) {
+function SpritesheetToAnimation(sheetName, frameWidth, frameHeight, delay) {
 	var cache = cc.spriteFrameCache;
 	var texture = cc.textureCache.getTextureForKey(res[sheetName]);
 	if (texture == null)
 		texture = cc.textureCache.addImage(res[sheetName]);
 	var framesX = Math.floor(texture.width / frameWidth);
 	var framesY = Math.floor(texture.height / frameHeight);
-	console.log(framesX + ', ' + framesY);
 	var frameCount = framesX * framesY;
 	
 	if (cache.getSpriteFrame(sheetName + '_0') == null) {
@@ -32,5 +31,5 @@ function SpritesheetToAnimation(sheetName, frameWidth, frameHeight, delay, loops
 	for (var i = 0; i < frameCount; ++i)
 		frames.push(cache.getSpriteFrame(sheetName + '_' + i));
 	
-	return new cc.Animation(frames, delay, loops);
+	return new cc.Animation(frames, delay, 1);
 }
