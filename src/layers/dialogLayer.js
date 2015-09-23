@@ -10,7 +10,7 @@ var DialogLayer = cc.Layer.extend({
 		CLOSED: 4
 	},
 	OPENING_TIME: 0.5,
-	NEXT_CHAR_TIME: 0.05,
+	NEXT_CHAR_TIME: 0.02,
 	PAUSE_TIME: 1.0,
 	CLOSING_TIME: 0.5,
 	CLOSED_OFFSET_Y: -100,
