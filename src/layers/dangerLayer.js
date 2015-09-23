@@ -8,192 +8,460 @@ var DANGERTYPE = {
 };
 
 var Danger = cc.Node.extend({
-	LEFT_LEFT: 0,
-	LEFT_RIGHT: 290,
-	RIGHT_LEFT: 1024 + 50 - 341,
-	RIGHT_RIGHT: 1024,
-	TOP_BOTTOM: 768 - 215,
-	TOP_TOP: 768,
-	BOTTOM_BOTTOM: 0,
-	BOTTOM_TOP: 256 - 30,
-	INSIDE_RADIUS: 100,
-	OUTSIDE_RADIUS: 375,
 	STATE: {
-		WARNING: 0,
-		HITTING: 1,
+		INTRO: 0,
+		HIT_IN: 1,
+		HIT_OUT: 2,
+		DONE: 3
 	},
-	LEFT_HITTING_LEFT: -342 / 2,
-	LEFT_HITTING_RIGHT: 342 / 2,
-	RIGHT_HITTING_LEFT: -342 / 2,
-	RIGHT_HITTING_RIGHT: 342 / 2,
 	scene: null,
-	type: null,
-	timer: null,
-	warningSprite: null,
-	hittingSprite: null,
-	curve: null,
 	state: null,
-	ctor: function(scene, type, timer) {
+	timer: null,
+	elapsedTime: null,
+	ctor: function(scene) {
 		this._super();
 		
 		this.scene = scene;
-		this.type = type;
-		this.timer = timer;
-		
-		switch (this.type) {
-			case DANGERTYPE.LEFT:
-				this.warningSprite = new cc.Sprite(res.warnings_vert_png);
-				this.warningSprite.setPosition(cc.winSize.width / 6, cc.winSize.height / 2);
-				this.hittingSprite = new cc.Sprite(res.water_left_png);
-				this.hittingSprite.setPosition(-342 / 2, cc.winSize.height / 2);
-				this.curve = new BounceCurve(0.5, new HalfSigmoid(-0.5));
-				break;
-			case DANGERTYPE.RIGHT:
-				this.warningSprite = new cc.Sprite(res.warnings_vert_png);
-				this.warningSprite.setPosition(cc.winSize.width * 5 / 6, cc.winSize.height / 2);
-				this.hittingSprite = new cc.Sprite(res.water_right_png);
-				this.hittingSprite.setPosition(cc.winSize.width + 342 / 2, cc.winSize.height / 2);
-				this.curve = new BounceCurve(0.5, new HalfSigmoid(-0.5));
-				break;
-			case DANGERTYPE.TOP:
-				this.warningSprite = new cc.Sprite(res.warnings_horiz_png);
-				this.warningSprite.setPosition(cc.winSize.width / 2, cc.winSize.height * 5 / 6);
-				break;
-			case DANGERTYPE.BOTTOM:
-				this.warningSprite = new cc.Sprite(res.warnings_horiz_png);
-				this.warningSprite.setPosition(cc.winSize.width / 2, cc.winSize.height / 6);
-				break;
-			case DANGERTYPE.INSIDE:
-				this.warningSprite = new cc.Sprite(res.warnings_inside_png);
-				this.warningSprite.setPosition(cc.winSize.width / 2, cc.winSize.height / 2);
-				break;
-			case DANGERTYPE.OUTSIDE:
-				this.warningSprite = new cc.Sprite(res.warnings_outside_png);
-				this.warningSprite.setPosition(cc.winSize.width / 2, cc.winSize.height / 2);
-				break;
-			default:
-				break;
-		}
-		this.addChild(this.warningSprite);
-		// TODO: take this out when everything has a hitting sprite
-		if (this.hittingSprite)
-			this.addChild(this.hittingSprite);
-		
-		this.transitionState(Danger.prototype.STATE.WARNING);
+		this.state = null;
+		this.timer = 0.0;
+		this.elapsedTime = 0.0;
 		
 		this.scheduleUpdate();
 	},
+	update: function(dt) {
+		if (this.state == Danger.prototype.STATE.DONE)
+			return;
+		
+		this.elapsedTime = Math.min(this.timer, this.elapsedTime + dt);
+		
+		if (this.elapsedTime >= this.timer)
+			this.transitionState(this.state + 1);
+	},
 	transitionState: function(newState) {
 		this.state = newState;
+		this.timer = 0.0;
+		this.elapsedTime = 0.0;
+	},
+	getT: function() {
+		return this.elapsedTime / this.timer;
+	},
+	isFinished: function() {
+		return this.state == Danger.prototype.STATE.DONE;
+	}
+});
+
+var VerticalDanger = Danger.extend({
+	HIT_IN_TIMER: 0.25,
+	HIT_OUT_TIMER: 0.25,
+	CURVE_K: -0.5,
+	BOUND_LEFT: 290,
+	BOUND_RIGHT: 733,
+	side: null,
+	startPoint: null,
+	endPoint: null,
+	warningTime: null,
+	dangerSprite: null,
+	waveSprite: null,
+	ctor: function(scene, side, warningTime) {
+		this._super(scene);
+		
+		this.side = side;
+		
+		var startX = 0.0;
+		var endX = 0.0;
+		if (side == 'left') {
+			startX = -cc.winSize.width / 6;
+			endX = cc.winSize.width / 6;
+		} else {
+			startX = cc.winSize.width * 7 / 6;
+			endX = cc.winSize.width * 5 / 6;
+		}
+		this.startPoint = vec2(startX, cc.winSize.height / 2);
+		this.endPoint = vec2(endX, cc.winSize.height / 2);
+		
+		this.warningTime = warningTime;
+		
+		this.dangerSprite = new cc.Sprite(res.warnings_vert_png);
+		this.addChild(this.dangerSprite);
+		this.waveSprite = new cc.Sprite(res.wave_png);
+		this.addChild(this.waveSprite);
+		
+		if (side == 'right')
+			this.waveSprite.setFlippedX(true);
+		
+		this.transitionState(Danger.prototype.STATE.INTRO);
+	},
+	transitionState: function(newState) {
+		this._super(newState);
+		
 		switch (newState) {
-			case Danger.prototype.STATE.WARNING:
-				this.warningSprite.setVisible(true);
-				// TODO: take this out when everything has a hitting sprite
-				if (this.hittingSprite)
-					this.hittingSprite.setVisible(false);
+			case Danger.prototype.STATE.INTRO:
+				this.timer = this.warningTime;
+				this.dangerSprite.setVisible(true);
+				this.dangerSprite.setPosition(vec2.point(this.endPoint));
+				this.waveSprite.setVisible(false);
 				break;
-			case Danger.prototype.STATE.HITTING:
-				this.warningSprite.setVisible(false);
-				// TODO: take this out when everything has a hitting sprite
-				if (this.hittingSprite)
-					this.hittingSprite.setVisible(true);
+			case Danger.prototype.STATE.HIT_IN:
+				this.timer = VerticalDanger.prototype.HIT_IN_TIMER;
+				this.dangerSprite.setVisible(false);
+				this.waveSprite.setVisible(true);
+				this.waveSprite.setPosition(vec2.point(this.startPoint));
 				break;
-			default:
+			case Danger.prototype.STATE.HIT_OUT:
+				this.execute();
+				this.timer = VerticalDanger.prototype.HIT_OUT_TIMER;
+				this.dangerSprite.setVisible(false);
+				this.waveSprite.setVisible(true);
+				this.waveSprite.setPosition(vec2.point(this.endPoint));
+				break;
+			case Danger.prototype.STATE.DONE:
+				this.dangerSprite.setVisible(false);
+				this.waveSprite.setVisible(false);
 				break;
 		}
 	},
 	update: function(dt) {
+		this._super(dt);
+		
 		switch (this.state) {
-			case Danger.prototype.STATE.WARNING:
-				this.timer -= dt;
-				if (this.timer <= 0.0) {
-					this.execute();
-					this.transitionState(Danger.prototype.STATE.HITTING);
-				}
+			case Danger.prototype.STATE.INTRO:
 				break;
-			case Danger.prototype.STATE.HITTING:
-				this.curve.update(dt);
-				switch (this.type) {
-					case DANGERTYPE.LEFT:
-						this.hittingSprite.setPosition(
-							Danger.prototype.LEFT_HITTING_LEFT + this.curve.getValue() * (Danger.prototype.LEFT_HITTING_RIGHT - Danger.prototype.LEFT_HITTING_LEFT),
-							this.hittingSprite.getPosition().y
-						);
-						break;
-					case DANGERTYPE.RIGHT:
-						this.hittingSprite.setPosition(
-							cc.winSize.width + Danger.prototype.RIGHT_HITTING_RIGHT + this.curve.getValue() * (Danger.prototype.RIGHT_HITTING_LEFT - Danger.prototype.RIGHT_HITTING_RIGHT),
-							this.hittingSprite.getPosition().y
-						);
-						break;
-					default:
-						break;
-				}
+			case Danger.prototype.STATE.HIT_IN:
+				this.waveSprite.setPosition(
+					vec2.point(
+						vec2.lerp(
+							vec2(),
+							this.startPoint,
+							this.endPoint,
+							HalfSigmoid(this.getT(), VerticalDanger.prototype.CURVE_K)
+						)
+					)
+				);
 				break;
-			default:
+			case Danger.prototype.STATE.HIT_OUT:
+				this.waveSprite.setPosition(
+					vec2.point(
+						vec2.lerp(
+							vec2(),
+							this.endPoint,
+							this.startPoint,
+							HalfSigmoid(this.getT(), -VerticalDanger.prototype.CURVE_K)
+						)
+					)
+				);
+				break;
+			case Danger.prototype.DONE:
 				break;
 		}
-	},
-	isFinished: function() {
-		return this.state == Danger.prototype.STATE.HITTING && this.curve.isFinished();
 	},
 	execute: function() {
-		switch (this.type) {
-			case DANGERTYPE.LEFT:
-				this.scene.soldierLayer.removeByLambda(
-					function(soldier) {
-						var left = soldier.rigidbody.position[0] + Soldier.prototype.RADIUS;
-						var right = soldier.rigidbody.position[0] - Soldier.prototype.RADIUS;
-						return right > Danger.prototype.LEFT_LEFT && left < Danger.prototype.LEFT_RIGHT;
-					}
-				);
+		if (this.side == 'left') {
+			this.scene.soldierLayer.removeByLambda(
+				function(soldier) {
+					return soldier.rigidbody.position[0] - Soldier.prototype.RADIUS <= VerticalDanger.prototype.BOUND_LEFT;
+				}
+			);
+		} else {
+			this.scene.soldierLayer.removeByLambda(
+				function(soldier) {
+					return soldier.rigidbody.position[0] + Soldier.prototype.RADIUS >= VerticalDanger.prototype.BOUND_RIGHT;
+				}
+			);
+		}
+	}
+});
+
+var HorizontalDanger = Danger.extend({
+	HIT_IN_TIMER: 0.25,
+	HIT_OUT_TIMER: 0.25,
+	CURVE_K: -0.5,
+	BOUND_TOP: 768 - 215,
+	BOUND_BOTTOM: 256 - 30,
+	side: null,
+	startPoint: null,
+	endPoint: null,
+	warningTime: null,
+	dangerSprite: null,
+	wallSprite: null,
+	ctor: function(scene, side, warningTime) {
+		this._super(scene);
+		
+		this.side = side;
+		
+		var startY = 0.0;
+		var endY = 0.0;
+		if (side == 'bottom') {
+			startY = -cc.winSize.height / 6;
+			endY = cc.winSize.height / 6;
+		} else {
+			startY = cc.winSize.height * 7 / 6;
+			endY = cc.winSize.height * 5 / 6;
+		}
+		this.startPoint = vec2(cc.winSize.width / 2, startY);
+		this.endPoint = vec2(cc.winSize.width / 2, endY);
+		
+		this.warningTime = warningTime;
+		
+		this.dangerSprite = new cc.Sprite(res.warnings_horiz_png);
+		this.addChild(this.dangerSprite);
+		this.wallSprite = new cc.Sprite(res.building_png);
+		this.addChild(this.wallSprite);
+		
+		if (side == 'bottom')
+			this.wallSprite.setFlippedY(true);
+		
+		this.transitionState(Danger.prototype.STATE.INTRO);
+	},
+	transitionState: function(newState) {
+		this._super(newState);
+		
+		switch (newState) {
+			case Danger.prototype.STATE.INTRO:
+				this.timer = this.warningTime;
+				this.dangerSprite.setVisible(true);
+				this.dangerSprite.setPosition(vec2.point(this.endPoint));
+				this.wallSprite.setVisible(false);
 				break;
-			case DANGERTYPE.RIGHT:
-				this.scene.soldierLayer.removeByLambda(
-					function(soldier) {
-						var left = soldier.rigidbody.position[0] + Soldier.prototype.RADIUS;
-						var right = soldier.rigidbody.position[0] - Soldier.prototype.RADIUS;
-						return right > Danger.prototype.RIGHT_LEFT && left < Danger.prototype.RIGHT_RIGHT;
-					}
-				);
+			case Danger.prototype.STATE.HIT_IN:
+				this.timer = HorizontalDanger.prototype.HIT_IN_TIMER;
+				this.dangerSprite.setVisible(false);
+				this.wallSprite.setVisible(true);
+				this.wallSprite.setPosition(vec2.point(this.startPoint));
 				break;
-			case DANGERTYPE.TOP:
-				this.scene.soldierLayer.removeByLambda(
-					function(soldier) {
-						var bottom = soldier.rigidbody.position[1] - Soldier.prototype.RADIUS;
-						var top = soldier.rigidbody.position[1] + Soldier.prototype.RADIUS;
-						return top > Danger.prototype.TOP_BOTTOM && bottom < Danger.prototype.TOP_TOP;
-					}
-				);
+			case Danger.prototype.STATE.HIT_OUT:
+				this.execute();
+				this.timer = HorizontalDanger.prototype.HIT_OUT_TIMER;
+				this.dangerSprite.setVisible(false);
+				this.wallSprite.setVisible(true);
+				this.wallSprite.setPosition(vec2.point(this.endPoint));
 				break;
-			case DANGERTYPE.BOTTOM:
-				this.scene.soldierLayer.removeByLambda(
-					function(soldier) {
-						var bottom = soldier.rigidbody.position[1] - Soldier.prototype.RADIUS;
-						var top = soldier.rigidbody.position[1] + Soldier.prototype.RADIUS;
-						return top > Danger.prototype.BOTTOM_BOTTOM && bottom < Danger.prototype.BOTTOM_TOP;
-					}
-				);
-				break;
-			case DANGERTYPE.INSIDE:
-				this.scene.soldierLayer.removeByLambda(
-					function(soldier) {
-						var dist = vec2.dist(soldier.rigidbody.position, vec2(cc.winSize.width / 2, cc.winSize.height / 2));
-						return dist < Danger.prototype.INSIDE_RADIUS + Soldier.prototype.RADIUS;
-					}
-				);
-				break;
-			case DANGERTYPE.OUTSIDE:
-				this.scene.soldierLayer.removeByLambda(
-					function(soldier) {
-						var dist = vec2.dist(soldier.rigidbody.position, vec2(cc.winSize.width / 2, cc.winSize.height / 2));
-						return dist > Danger.prototype.OUTSIDE_RADIUS - Soldier.prototype.RADIUS;
-					}
-				);
-				break;
-			default:
+			case Danger.prototype.STATE.DONE:
+				this.dangerSprite.setVisible(false);
+				this.wallSprite.setVisible(false);
 				break;
 		}
+	},
+	update: function(dt) {
+		this._super(dt);
+		
+		switch (this.state) {
+			case Danger.prototype.STATE.INTRO:
+				break;
+			case Danger.prototype.STATE.HIT_IN:
+				this.wallSprite.setPosition(
+					vec2.point(
+						vec2.lerp(
+							vec2(),
+							this.startPoint,
+							this.endPoint,
+							HalfSigmoid(this.getT(), HorizontalDanger.prototype.CURVE_K)
+						)
+					)
+				);
+				break;
+			case Danger.prototype.STATE.HIT_OUT:
+				this.wallSprite.opacity = Math.floor(255 * (1.0 - this.getT()));
+				break;
+			case Danger.prototype.DONE:
+				break;
+		}
+	},
+	execute: function() {
+		if (this.side == 'bottom') {
+			this.scene.soldierLayer.removeByLambda(
+				function(soldier) {
+					return soldier.rigidbody.position[1] - Soldier.prototype.RADIUS <= HorizontalDanger.prototype.BOUND_BOTTOM;
+				}
+			);
+		} else {
+			this.scene.soldierLayer.removeByLambda(
+				function(soldier) {
+					return soldier.rigidbody.position[1] + Soldier.prototype.RADIUS >= HorizontalDanger.prototype.BOUND_TOP;
+				}
+			);
+		}
+	}
+});
+
+var InsideDanger = Danger.extend({
+	HIT_IN_TIMER: 0.25,
+	HIT_OUT_TIMER: 0.25,
+	CURVE_K: 0.5,
+	RADIUS: 100,
+	OFFSET_X: 0,
+	OFFSET_Y: 400,
+	startPoint: null,
+	endPoint: null,
+	warningTime: null,
+	dangerSprite: null,
+	boulderSprite: null,
+	ctor: function(scene, warningTime) {
+		this._super(scene);
+		
+		this.startPoint = vec2(cc.winSize.width / 2 + InsideDanger.prototype.OFFSET_X, cc.winSize.height / 2 + InsideDanger.prototype.OFFSET_Y);
+		this.endPoint = vec2(cc.winSize.width / 2, cc.winSize.height / 2);
+		
+		this.warningTime = warningTime;
+		
+		this.dangerSprite = new cc.Sprite(res.warnings_inside_png);
+		this.addChild(this.dangerSprite);
+		this.boulderSprite = new cc.Sprite(res.boulder_png);
+		this.addChild(this.boulderSprite);
+		
+		this.transitionState(Danger.prototype.STATE.INTRO);
+	},
+	transitionState: function(newState) {
+		this._super(newState);
+		
+		switch (newState) {
+			case Danger.prototype.STATE.INTRO:
+				this.timer = this.warningTime;
+				this.dangerSprite.setVisible(true);
+				this.dangerSprite.setPosition(vec2.point(this.endPoint));
+				this.boulderSprite.setVisible(false);
+				break;
+			case Danger.prototype.STATE.HIT_IN:
+				this.timer = InsideDanger.prototype.HIT_IN_TIMER;
+				this.dangerSprite.setVisible(false);
+				this.boulderSprite.setVisible(true);
+				this.boulderSprite.setPosition(vec2.point(this.startPoint));
+				break;
+			case Danger.prototype.STATE.HIT_OUT:
+				this.execute();
+				this.timer = InsideDanger.prototype.HIT_OUT_TIMER;
+				this.dangerSprite.setVisible(false);
+				this.boulderSprite.setVisible(true);
+				this.boulderSprite.setPosition(vec2.point(this.endPoint));
+				break;
+			case Danger.prototype.STATE.DONE:
+				this.dangerSprite.setVisible(false);
+				this.boulderSprite.setVisible(false);
+				break;
+		}
+	},
+	update: function(dt) {
+		this._super(dt);
+		
+		switch (this.state) {
+			case Danger.prototype.STATE.INTRO:
+				break;
+			case Danger.prototype.STATE.HIT_IN:
+				this.boulderSprite.setPosition(
+					vec2.point(
+						vec2.lerp(
+							vec2(),
+							this.startPoint,
+							this.endPoint,
+							HalfSigmoid(this.getT(), InsideDanger.prototype.CURVE_K)
+						)
+					)
+				);
+				break;
+			case Danger.prototype.STATE.HIT_OUT:
+				this.boulderSprite.opacity = Math.floor(255 * (1.0 - this.getT()));
+				break;
+			case Danger.prototype.DONE:
+				break;
+		}
+	},
+	execute: function() {
+		this.scene.soldierLayer.removeByLambda(
+			function(soldier) {
+				var dist = vec2.dist(soldier.rigidbody.position, vec2(cc.winSize.width / 2, cc.winSize.height / 2));
+				return dist < InsideDanger.prototype.RADIUS + Soldier.prototype.RADIUS;
+			}
+		);
+	}
+});
+
+var OutsideDanger = Danger.extend({
+	HIT_IN_TIMER: 0.25,
+	HIT_OUT_TIMER: 0.25,
+	CURVE_K: 0.5,
+	RADIUS: 375,
+	OFFSET_X: 0,
+	OFFSET_Y: 400,
+	startPoint: null,
+	endPoint: null,
+	warningTime: null,
+	dangerSprite: null,
+	arrowsSprite: null,
+	ctor: function(scene, warningTime) {
+		this._super(scene);
+		
+		this.startPoint = vec2(cc.winSize.width / 2 + OutsideDanger.prototype.OFFSET_X, cc.winSize.height / 2 + OutsideDanger.prototype.OFFSET_Y);
+		this.endPoint = vec2(cc.winSize.width / 2, cc.winSize.height / 2);
+		
+		this.warningTime = warningTime;
+		
+		this.dangerSprite = new cc.Sprite(res.warnings_outside_png);
+		this.addChild(this.dangerSprite);
+		this.arrowsSprite = new cc.Sprite(res.arrows_png);
+		this.addChild(this.arrowsSprite);
+		
+		this.transitionState(Danger.prototype.STATE.INTRO);
+	},
+	transitionState: function(newState) {
+		this._super(newState);
+		
+		switch (newState) {
+			case Danger.prototype.STATE.INTRO:
+				this.timer = this.warningTime;
+				this.dangerSprite.setVisible(true);
+				this.dangerSprite.setPosition(vec2.point(this.endPoint));
+				this.arrowsSprite.setVisible(false);
+				break;
+			case Danger.prototype.STATE.HIT_IN:
+				this.timer = OutsideDanger.prototype.HIT_IN_TIMER;
+				this.dangerSprite.setVisible(false);
+				this.arrowsSprite.setVisible(true);
+				this.arrowsSprite.setPosition(vec2.point(this.startPoint));
+				break;
+			case Danger.prototype.STATE.HIT_OUT:
+				this.execute();
+				this.timer = OutsideDanger.prototype.HIT_OUT_TIMER;
+				this.dangerSprite.setVisible(false);
+				this.arrowsSprite.setVisible(true);
+				this.arrowsSprite.setPosition(vec2.point(this.endPoint));
+				break;
+			case Danger.prototype.STATE.DONE:
+				this.dangerSprite.setVisible(false);
+				this.arrowsSprite.setVisible(false);
+				break;
+		}
+	},
+	update: function(dt) {
+		this._super(dt);
+		
+		switch (this.state) {
+			case Danger.prototype.STATE.INTRO:
+				break;
+			case Danger.prototype.STATE.HIT_IN:
+				this.arrowsSprite.setPosition(
+					vec2.point(
+						vec2.lerp(
+							vec2(),
+							this.startPoint,
+							this.endPoint,
+							HalfSigmoid(this.getT(), OutsideDanger.prototype.CURVE_K)
+						)
+					)
+				);
+				break;
+			case Danger.prototype.STATE.HIT_OUT:
+				this.arrowsSprite.opacity = Math.floor(255 * (1.0 - this.getT()));
+				break;
+			case Danger.prototype.DONE:
+				break;
+		}
+	},
+	execute: function() {
+		this.scene.soldierLayer.removeByLambda(
+			function(soldier) {
+				var dist = vec2.dist(soldier.rigidbody.position, vec2(cc.winSize.width / 2, cc.winSize.height / 2));
+				return dist > OutsideDanger.prototype.RADIUS - Soldier.prototype.RADIUS;
+			}
+		);
 	}
 });
 
@@ -219,7 +487,29 @@ var DangerLayer = cc.Layer.extend({
 		}
 	},
 	spawn: function(type, timer) {
-		var danger = new Danger(this.scene, type, timer);
+		var danger = null;
+		switch (type) {
+			case DANGERTYPE.LEFT:
+				danger = new VerticalDanger(this.scene, 'left', timer);
+				break;
+			case DANGERTYPE.RIGHT:
+				danger = new VerticalDanger(this.scene, 'right', timer);
+				break;
+			case DANGERTYPE.BOTTOM:
+				danger = new HorizontalDanger(this.scene, 'bottom', timer);
+				break;
+			case DANGERTYPE.TOP:
+				danger = new HorizontalDanger(this.scene, 'top', timer);
+				break;
+			case DANGERTYPE.INSIDE:
+				danger = new InsideDanger(this.scene, timer);
+				break;
+			case DANGERTYPE.OUTSIDE:
+				danger = new OutsideDanger(this.scene, timer);
+				break;
+			default:
+				break;
+		}
 		this.dangers.push(danger);
 		this.addChild(danger);
 	}
