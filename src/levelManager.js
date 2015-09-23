@@ -56,7 +56,10 @@ LevelManager.prototype.getLevelIndex = function() {
 LevelManager.prototype.setLevel = function(index) {
 	this.levelIndex = index;
 	this.level = LevelManager.LEVELS[this.levelIndex];
-	this.time = this.level.runTime;
+	if (g_skipWaves)
+		this.time = 0.0;
+	else
+		this.time = this.level.runTime;
 	this.elapsedTime = 0.0;
 	this.resetSpawn();
 };
@@ -71,7 +74,7 @@ LevelManager.prototype.isLevelFinished = function() {
 	return this.elapsedTime >= this.time;
 };
 LevelManager.prototype.areAllLevelsFinished = function() {
-	return this.isLevelFinished() && this.level == LevelManager.LEVELS.length - 1;
+	return this.levelIndex == LevelManager.LEVELS.length - 1;
 };
 LevelManager.prototype.getT = function() {
 	return this.elapsedTime / this.time;

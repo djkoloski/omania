@@ -1,5 +1,7 @@
 var g_resolutionWidth = 1024;
 var g_resolutionHeight = 768;
+var g_godMode = false;
+var g_skipWaves = false;
 
 cc.game.onStart = function() {
 	//var startScene = GameScene;
