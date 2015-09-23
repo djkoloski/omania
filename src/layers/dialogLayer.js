@@ -27,7 +27,7 @@ var DialogLayer = cc.Layer.extend({
 	timer: null,
 	label: null,
 	background: null,
-	dialogueSpriteOnLeft: true,
+	dialogSpriteOnLeft: true,
 	ctor: function(scene) {
 		this._super();
 		
@@ -82,7 +82,7 @@ var DialogLayer = cc.Layer.extend({
 				break;
 		}
 	},
-	openDialog: function(string, callbackFunc, picture) {
+	openDialog: function(string, callbackFunc, picture, onLeft) {
 		this.dialogs = [];
 		var lines = [];
 		var line = '';
@@ -96,6 +96,7 @@ var DialogLayer = cc.Layer.extend({
 		if (picture != null) {
 			this.speakerSprite = new cc.Sprite(picture);
 			this.addChild(this.speakerSprite, DialogLayer.prototype.DIALOG_SPEAKERSPRITE_ORDER);
+			this.dialogSpriteOnLeft = onLeft;
 		}
 		
 		while (index < string.length) {
@@ -158,7 +159,7 @@ var DialogLayer = cc.Layer.extend({
 		this.background.setPosition(position);
 		var speakerOffset;
 		
-		if (this.dialogueSpriteOnLeft)
+		if (this.dialogSpriteOnLeft)
 			speakerOffset = -DialogLayer.prototype.SPEAKER_SPRITE_OFFSET_X;
 		else
 			speakerOffset = DialogLayer.prototype.SPEAKER_SPRITE_OFFSET_X;

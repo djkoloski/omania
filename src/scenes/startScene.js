@@ -28,8 +28,7 @@ var StartLayer = cc.Layer.extend({
     },
     startGame: function(key){
         if (key == cc.KEY.space) {
-            window.scene = new GameScene();
-            cc.director.runScene(window.scene);
+            cc.director.runScene(new GameScene());
             console.log("Start");
         }
     }

@@ -1,18 +1,17 @@
 var GameScene = cc.Scene.extend({
-	DANGER_TIME: 4, // Time per danger spawn
-	DANGER_DUR: 2, // Duration until danger occurs/finishes
-	TIME_INRC: .5, // Amount to subtract from DANGER_TIME at each level
-	DUR_INRC: .3, // Amount to subtract from DANGER_DUR at each level
-	TIME_CAP: 1.5, // Cap for the shortest time for DANGER_TIME
-	DUR_CAP:.7, // Cap for the shortest time for DANGER_DUR
-	LEVEL_TIME: 10, // How long before DANGER_TIME and DANGER_DUR are shorten
+	STATE: {
+		DIALOG: 0,
+		GAME: 1
+	},
 	soldierLayer: null,
 	dangerLayer: null,
 	dialogLayer: null,
 	backgroundLayer: null,
 	hudLayer: null,
-	dangerTimer: null,
-	levelTimer: null,
+	state: null,
+	currentDialog: null,
+	currentDialogIndex: null,
+	levelManager: null,
 	onEnter: function() {
 		this._super();
 
@@ -27,35 +26,69 @@ var GameScene = cc.Scene.extend({
 		this.addChild(this.dangerLayer);
 		this.addChild(this.dialogLayer);
 		//this.addChild(this.hudLayer);
-
-		this.dangerTimer = this.DANGER_TIME;
-		this.levelTimer = this.LEVEL_TIME;
-
+		
+		this.state = null;
+		this.levelManager = new LevelManager(this);
+		
+		this.beginDialog(DIALOGS[0]);
+		
 		this.scheduleUpdate();
 	},
-	update: function(dt) {
-		if (this.dangerTimer > 0.0) {
-			this.dangerTimer -= dt;
-			if (this.dangerTimer <= 0.0) {
-				var randDanger = Math.floor(Math.random() * 6);
-				console.log(randDanger,this.DANGER_DUR);
-				this.dangerLayer.spawn(randDanger, this.DANGER_DUR);
-				this.dangerTimer = this.DANGER_TIME;
-			}
+	transitionState: function(newState) {
+		this.state = newState;
+		switch (newState) {
+			case GameScene.prototype.STATE.DIALOG:
+				break;
+			case GameScene.prototype.STATE.GAME:
+				if (!this.levelManager.areAllLevelsFinished())
+					this.levelManager.advanceLevel();
+				else
+					cc.director.runScene(new EndScene());
+				break;
 		}
-		if (this.levelTimer > 0.0) {
-			this.levelTimer -= dt;
-			if (this.levelTimer <= 0.0) {
-				this.DANGER_DUR -= this.DUR_INRC;
-				if (this.DANGER_DUR <= this.DUR_CAP) {
-					this.DANGER_DUR = this.DUR_CAP;
+	},
+	beginDialog: function(dialog) {
+		this.transitionState(GameScene.prototype.STATE.DIALOG);
+		this.currentDialog = dialog;
+		this.currentDialogIndex = 0;
+		
+		this.runDialog();
+	},
+	runDialog: function() {
+		var speaker = this.currentDialog[this.currentDialogIndex].speaker;
+		var image = null;
+		var message = null;
+		
+		if (speaker == 'Aazaad')
+			image = res.aazaad_png;
+		else if (speaker == 'Talha')
+			image = res.talha_png;
+		
+		this.dialogLayer.openDialog(
+			(speaker != null ? speaker + ': ' : '') + this.currentDialog[this.currentDialogIndex].message,
+			this.advanceDialog.bind(this),
+			image,
+			speaker == 'Aazaad'
+		);
+	},
+	advanceDialog: function() {
+		++this.currentDialogIndex;
+		
+		if (this.currentDialogIndex >= this.currentDialog.length)
+			this.transitionState(GameScene.prototype.STATE.GAME);
+		else
+			this.runDialog();
+	},
+	update: function(dt) {
+		switch (this.state) {
+			case GameScene.prototype.STATE.DIALOG:
+				break;
+			case GameScene.prototype.STATE.GAME:
+				this.levelManager.update(dt);
+				if (this.levelManager.isLevelFinished()) {
+					this.beginDialog(DIALOGS[this.levelManager.getLevelIndex() + 1]);
 				}
-				this.DANGER_TIME -= this.TIME_INRC;
-				if (this.DANGER_TIME <= this.TIME_CAP) {
-					this.DANGER_TIME = this.TIME_CAP;
-				}
-				this.levelTimer = this.LEVEL_TIME;
-			}
+				break;
 		}
 	}
 });
