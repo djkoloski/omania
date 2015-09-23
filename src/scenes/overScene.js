@@ -1,4 +1,6 @@
 var GameOverLayer = cc.Layer.extend({
+    BACKGROUND: res.floor_png,
+    TEXT: res.floor_png,
     ctor: function(scene) {
         this._super();
 
@@ -12,11 +14,14 @@ var GameOverLayer = cc.Layer.extend({
         this.isKeyboardEnabled = true;
         cc.eventManager.addListener(keyListener, this);
 
-        var goodbyeLabel = new cc.LabelTTF("Press R to Restart", "Arial", 38);
-        goodbyeLabel.x = cc.winSize.width/2;
-        goodbyeLabel.y = cc.winSize.height/2;
+        var background = new cc.Sprite(GameOverLayer.prototype.BACKGROUND);
+        background.setPosition(cc.winSize.width/2, cc.winSize.height/2);
+        var gameOverLabel = new cc.LabelTTF("Press R to Restart", "Arial", 38);
+        //var gameOverLabel = new cc.Sprite(GameOverLayer.prototype.TEXT);
+        gameOverLabel.setPosition(cc.winSize.width/2, cc.winSize.height/4);
 
-        this.addChild(goodbyeLabel, 5);
+        this.addChild(background, 4);
+        this.addChild(gameOverLabel, 5);
     },
     endGame: function(key){
         if (key == cc.KEY.r) {

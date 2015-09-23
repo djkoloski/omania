@@ -11,7 +11,7 @@ var SoldierLayer = cc.Layer.extend({
 	SOLDIER_ORDER: 50,
 	EDGE_OFFSET: 32,
 	SOLDIER_SPACING: 60,
-	REFRESH_TIME: 2,
+	REFRESH_TIME: 1,
 	scene: null,
 	soldiers: null,
 	formation: null,
