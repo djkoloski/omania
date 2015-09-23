@@ -173,13 +173,14 @@ var SoldierLayer = cc.Layer.extend({
 		this.soldiers = newSoldiers;
 
 		// Refresh formation after losing men
-		if (newSoldiers.length != oldLength)
+		if (newSoldiers.length != oldLength) {
 			this.setFormation(this.formation);
+		}
 
 		//GameOver condition
 		if (this.soldiers.length <= 0){
-			//cc.director.pushScene(GameScene);
-			cc.director.runScene(new GameOverScene);
+			window.scene = new GameOverScene();
+			cc.director.runScene(window.scene);
 			console.log("GameOver");
 		}
 	}

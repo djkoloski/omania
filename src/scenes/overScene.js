@@ -20,8 +20,8 @@ var GameOverLayer = cc.Layer.extend({
     },
     endGame: function(key){
         if (key == cc.KEY.r) {
-            //cc.director.pushScene(GameOverScene);
-            cc.director.runScene(new StartScene);
+            window.scene = new StartScene();
+            cc.director.runScene(window.scene);
             console.log("Restart");
         }
     }

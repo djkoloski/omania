@@ -18,16 +18,22 @@ var Danger = cc.Node.extend({
 	BOTTOM_TOP: 256 - 30,
 	INSIDE_RADIUS: 100,
 	OUTSIDE_RADIUS: 375,
+	STATE: {
+		WARNING: 0,
+		HITTING: 1,
+	},
 	scene: null,
 	type: null,
 	timer: null,
 	sprite: null,
+	state: null,
 	ctor: function(scene, type, timer) {
 		this._super();
 		
 		this.scene = scene;
 		this.type = type;
 		this.timer = timer;
+		this.state = Danger.prototype.STATE.WARNING;
 		
 		switch (this.type) {
 			case DANGERTYPE.LEFT:
@@ -61,6 +67,43 @@ var Danger = cc.Node.extend({
 		
 		this.scheduleUpdate();
 	},
+	transitionState: function(newState) {
+		this.state = newState;
+		switch(newState) {
+			case Danger.prototype.STATE.HITTING:
+				switch(this.type) {
+					case DANGERTYPE.LEFT:
+						this.sprite = new cc.Sprite(res.water_placeholder_png);
+						this.sprite.setPosition(cc.winSize.width / 6, cc.winSize.height / 2);
+						break;
+					case DANGERTYPE.RIGHT:
+						this.sprite = new cc.Sprite(res.water_placeholder_png);
+						this.sprite.setPosition(cc.winSize.width * 5 / 6, cc.winSize.height / 2);
+						break;
+					case DANGERTYPE.TOP:
+						this.sprite = new cc.Sprite(res.warnings_horiz_png);
+						this.sprite.setPosition(cc.winSize.width / 2, cc.winSize.height * 5 / 6);
+						break;
+					case DANGERTYPE.BOTTOM:
+						this.sprite = new cc.Sprite(res.warnings_horiz_png);
+						this.sprite.setPosition(cc.winSize.width / 2, cc.winSize.height / 6);
+						break;
+					case DANGERTYPE.INSIDE:
+						this.sprite = new cc.Sprite(res.boulder_png);
+						this.sprite.setPosition(cc.winSize.width / 2, cc.winSize.height / 2);
+						break;
+					case DANGERTYPE.OUTSIDE:
+						this.sprite = new cc.Sprite(res.arrows_png);
+						this.sprite.setPosition(cc.winSize.width / 2, cc.winSize.height / 2);
+						break;
+					default:
+						break;
+				}
+
+		}
+
+		}
+	}
 	update: function(dt) {
 		if (this.timer > 0.0) {
 			this.timer -= dt;
