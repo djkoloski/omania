@@ -22,10 +22,16 @@ var Danger = cc.Node.extend({
 		WARNING: 0,
 		HITTING: 1,
 	},
+	LEFT_HITTING_LEFT: -342 / 2,
+	LEFT_HITTING_RIGHT: 342 / 2,
+	RIGHT_HITTING_LEFT: -342 / 2,
+	RIGHT_HITTING_RIGHT: 342 / 2,
 	scene: null,
 	type: null,
 	timer: null,
-	sprite: null,
+	warningSprite: null,
+	hittingSprite: null,
+	curve: null,
 	state: null,
 	ctor: function(scene, type, timer) {
 		this._super();
@@ -33,86 +39,103 @@ var Danger = cc.Node.extend({
 		this.scene = scene;
 		this.type = type;
 		this.timer = timer;
-		this.state = Danger.prototype.STATE.WARNING;
 		
 		switch (this.type) {
 			case DANGERTYPE.LEFT:
-				this.sprite = new cc.Sprite(res.warnings_vert_png);
-				this.sprite.setPosition(cc.winSize.width / 6, cc.winSize.height / 2);
+				this.warningSprite = new cc.Sprite(res.warnings_vert_png);
+				this.warningSprite.setPosition(cc.winSize.width / 6, cc.winSize.height / 2);
+				this.hittingSprite = new cc.Sprite(res.water_left_png);
+				this.hittingSprite.setPosition(-342 / 2, cc.winSize.height / 2);
+				this.curve = new BounceCurve(0.5, new HalfSigmoid(-0.5));
 				break;
 			case DANGERTYPE.RIGHT:
-				this.sprite = new cc.Sprite(res.warnings_vert_png);
-				this.sprite.setPosition(cc.winSize.width * 5 / 6, cc.winSize.height / 2);
+				this.warningSprite = new cc.Sprite(res.warnings_vert_png);
+				this.warningSprite.setPosition(cc.winSize.width * 5 / 6, cc.winSize.height / 2);
+				this.hittingSprite = new cc.Sprite(res.water_right_png);
+				this.hittingSprite.setPosition(cc.winSize.width + 342 / 2, cc.winSize.height / 2);
+				this.curve = new BounceCurve(0.5, new HalfSigmoid(-0.5));
 				break;
 			case DANGERTYPE.TOP:
-				this.sprite = new cc.Sprite(res.warnings_horiz_png);
-				this.sprite.setPosition(cc.winSize.width / 2, cc.winSize.height * 5 / 6);
+				this.warningSprite = new cc.Sprite(res.warnings_horiz_png);
+				this.warningSprite.setPosition(cc.winSize.width / 2, cc.winSize.height * 5 / 6);
 				break;
 			case DANGERTYPE.BOTTOM:
-				this.sprite = new cc.Sprite(res.warnings_horiz_png);
-				this.sprite.setPosition(cc.winSize.width / 2, cc.winSize.height / 6);
+				this.warningSprite = new cc.Sprite(res.warnings_horiz_png);
+				this.warningSprite.setPosition(cc.winSize.width / 2, cc.winSize.height / 6);
 				break;
 			case DANGERTYPE.INSIDE:
-				this.sprite = new cc.Sprite(res.warnings_inside_png);
-				this.sprite.setPosition(cc.winSize.width / 2, cc.winSize.height / 2);
+				this.warningSprite = new cc.Sprite(res.warnings_inside_png);
+				this.warningSprite.setPosition(cc.winSize.width / 2, cc.winSize.height / 2);
 				break;
 			case DANGERTYPE.OUTSIDE:
-				this.sprite = new cc.Sprite(res.warnings_outside_png);
-				this.sprite.setPosition(cc.winSize.width / 2, cc.winSize.height / 2);
+				this.warningSprite = new cc.Sprite(res.warnings_outside_png);
+				this.warningSprite.setPosition(cc.winSize.width / 2, cc.winSize.height / 2);
 				break;
 			default:
 				break;
 		}
-		this.addChild(this.sprite);
+		this.addChild(this.warningSprite);
+		// TODO: take this out when everything has a hitting sprite
+		if (this.hittingSprite)
+			this.addChild(this.hittingSprite);
+		
+		this.transitionState(Danger.prototype.STATE.WARNING);
 		
 		this.scheduleUpdate();
 	},
 	transitionState: function(newState) {
 		this.state = newState;
-		switch(newState) {
+		switch (newState) {
+			case Danger.prototype.STATE.WARNING:
+				this.warningSprite.setVisible(true);
+				// TODO: take this out when everything has a hitting sprite
+				if (this.hittingSprite)
+					this.hittingSprite.setVisible(false);
+				break;
 			case Danger.prototype.STATE.HITTING:
-				switch(this.type) {
+				this.warningSprite.setVisible(false);
+				// TODO: take this out when everything has a hitting sprite
+				if (this.hittingSprite)
+					this.hittingSprite.setVisible(true);
+				break;
+			default:
+				break;
+		}
+	},
+	update: function(dt) {
+		switch (this.state) {
+			case Danger.prototype.STATE.WARNING:
+				this.timer -= dt;
+				if (this.timer <= 0.0) {
+					this.execute();
+					this.transitionState(Danger.prototype.STATE.HITTING);
+				}
+				break;
+			case Danger.prototype.STATE.HITTING:
+				this.curve.update(dt);
+				switch (this.type) {
 					case DANGERTYPE.LEFT:
-						this.sprite = new cc.Sprite(res.water_placeholder_png);
-						this.sprite.setPosition(cc.winSize.width / 6, cc.winSize.height / 2);
+						this.hittingSprite.setPosition(
+							Danger.prototype.LEFT_HITTING_LEFT + this.curve.getValue() * (Danger.prototype.LEFT_HITTING_RIGHT - Danger.prototype.LEFT_HITTING_LEFT),
+							this.hittingSprite.getPosition().y
+						);
 						break;
 					case DANGERTYPE.RIGHT:
-						this.sprite = new cc.Sprite(res.water_placeholder_png);
-						this.sprite.setPosition(cc.winSize.width * 5 / 6, cc.winSize.height / 2);
-						break;
-					case DANGERTYPE.TOP:
-						this.sprite = new cc.Sprite(res.warnings_horiz_png);
-						this.sprite.setPosition(cc.winSize.width / 2, cc.winSize.height * 5 / 6);
-						break;
-					case DANGERTYPE.BOTTOM:
-						this.sprite = new cc.Sprite(res.warnings_horiz_png);
-						this.sprite.setPosition(cc.winSize.width / 2, cc.winSize.height / 6);
-						break;
-					case DANGERTYPE.INSIDE:
-						this.sprite = new cc.Sprite(res.boulder_png);
-						this.sprite.setPosition(cc.winSize.width / 2, cc.winSize.height / 2);
-						break;
-					case DANGERTYPE.OUTSIDE:
-						this.sprite = new cc.Sprite(res.arrows_png);
-						this.sprite.setPosition(cc.winSize.width / 2, cc.winSize.height / 2);
+						this.hittingSprite.setPosition(
+							cc.winSize.width + Danger.prototype.RIGHT_HITTING_RIGHT + this.curve.getValue() * (Danger.prototype.RIGHT_HITTING_LEFT - Danger.prototype.RIGHT_HITTING_RIGHT),
+							this.hittingSprite.getPosition().y
+						);
 						break;
 					default:
 						break;
 				}
-
-		}
-
-		}
-	}
-	update: function(dt) {
-		if (this.timer > 0.0) {
-			this.timer -= dt;
-			if (this.timer <= 0.0)
-				this.execute();
+				break;
+			default:
+				break;
 		}
 	},
 	isFinished: function() {
-		return this.timer <= 0.0;
+		return this.state == Danger.prototype.STATE.HITTING && this.curve.isFinished();
 	},
 	execute: function() {
 		switch (this.type) {

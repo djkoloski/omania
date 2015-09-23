@@ -37,7 +37,8 @@ var GameScene = cc.Scene.extend({
 		if (this.dangerTimer > 0.0) {
 			this.dangerTimer -= dt;
 			if (this.dangerTimer <= 0.0) {
-				var randDanger = Math.trunc(Math.random() * 6);
+				// TODO: make this * 6 again when all the dangers are fully implemented
+				var randDanger = Math.floor(Math.random() * 2);
 				console.log(randDanger,this.DANGER_DUR);
 				this.dangerLayer.spawn(randDanger, this.DANGER_DUR);
 				this.dangerTimer = this.DANGER_TIME;
