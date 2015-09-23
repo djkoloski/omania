@@ -1,6 +1,10 @@
 var GameScene = cc.Scene.extend({
 	DANGER_TIME: 4, // Time per danger spawn
 	DANGER_DUR: 2, // Duration until danger occurs/finishes
+	TIME_INRC: .5, // Amount to subtract from DANGER_TIME at each level
+	DUR_INRC: .3, // Amount to subtract from DANGER_DUR at each level
+	TIME_CAP: 1.5, // Cap for the shortest time for DANGER_TIME
+	DUR_CAP:.7, // Cap for the shortest time for DANGER_DUR
 	LEVEL_TIME: 10, // How long before DANGER_TIME and DANGER_DUR are shorten
 	soldierLayer: null,
 	dangerLayer: null,
@@ -39,13 +43,13 @@ var GameScene = cc.Scene.extend({
 		if (this.levelTimer > 0.0) {
 			this.levelTimer -= dt;
 			if (this.levelTimer <= 0.0) {
-				this.DANGER_DUR -= .3;
-				if (this.DANGER_DUR <= .70) {
-					this.DANGER_DUR = .70;
+				this.DANGER_DUR -= this.DUR_INRC;
+				if (this.DANGER_DUR <= this.DUR_CAP) {
+					this.DANGER_DUR = this.DUR_CAP;
 				}
-				this.DANGER_TIME -= .5;
-				if (this.DANGER_TIME <= 2) {
-					this.DANGER_TIME = 2;
+				this.DANGER_TIME -= this.TIME_INRC;
+				if (this.DANGER_TIME <= this.TIME_CAP) {
+					this.DANGER_TIME = this.TIME_CAP;
 				}
 				this.levelTimer = this.LEVEL_TIME;
 			}
