@@ -7,7 +7,7 @@ var GameScene = cc.Scene.extend({
 	dangerLayer: null,
 	dialogLayer: null,
 	backgroundLayer: null,
-	hudLayer: null,
+	progressLayer: null,
 	state: null,
 	currentDialog: null,
 	currentDialogIndex: null,
@@ -19,13 +19,13 @@ var GameScene = cc.Scene.extend({
 		this.soldierLayer = new SoldierLayer(this);
 		this.dangerLayer = new DangerLayer(this);
 		this.dialogLayer = new DialogLayer(this);
-		//this.hudLayer = new HUDLayer(this);
+		this.progressLayer = new ProgressLayer(this);
 
 		this.addChild(this.backgroundLayer);
 		this.addChild(this.soldierLayer);
 		this.addChild(this.dangerLayer);
 		this.addChild(this.dialogLayer);
-		//this.addChild(this.hudLayer);
+		this.addChild(this.progressLayer);
 		
 		this.state = null;
 		this.levelManager = new LevelManager(this);
@@ -80,6 +80,8 @@ var GameScene = cc.Scene.extend({
 			this.runDialog();
 	},
 	update: function(dt) {
+		this.progressLayer.movePointer(this.levelManager.getTotalT());
+		
 		switch (this.state) {
 			case GameScene.prototype.STATE.DIALOG:
 				break;

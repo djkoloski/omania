@@ -26,6 +26,7 @@
 		"src/scenes/startScene.js",
 		"src/scenes/endScene.js",
 		"src/scenes/overScene.js",
+		"src/layers/progressLayer.js",
 		"src/layers/background.js",
 		"src/layers/soldierLayer.js",
 		"src/layers/dialogLayer.js",

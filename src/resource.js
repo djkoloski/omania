@@ -1,5 +1,5 @@
 var res = {
-	StartScreen_Oman_title_start_png: "res/StartScreen/Oman_title_start.png",
+	END_SCREEN_png: "res/END_SCREEN.png",
 	TileGameResources_meta_tiles_png: "res/TileGameResources/meta_tiles.png",
 	talha_png: "res/talha.png",
 	progressbar_done_png: "res/progressbar_done.png",
@@ -18,6 +18,7 @@ var res = {
 	water_placeholder_png: "res/water_placeholder.png",
 	TileSets_castle_architecture_png: "res/TileSets/castle_architecture.png",
 	background_sand_png: "res/background/sand.png",
+	StartScreen_Oman_title_start_png: "res/StartScreen/Oman_title_start.png",
 	background_beach_png: "res/background/beach.png",
 	StartScreen_start_bckgrnd_png: "res/StartScreen/start_bckgrnd.png",
 	warnings_horiz_png: "res/warnings/horiz.png",

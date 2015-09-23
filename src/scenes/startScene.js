@@ -18,7 +18,7 @@ var StartLayer = cc.Layer.extend({
         var background = new cc.Sprite(StartLayer.prototype.BACKGROUND);
         background.setPosition(cc.winSize.width/2,cc.winSize.height/2);
         var title = new cc.Sprite(StartLayer.prototype.TITLE);
-        title.setPosition(512,3*cc.winSize.height/4);
+        title.setPosition(512,3*cc.winSize.height/4);r
         var startButton = new cc.Sprite(StartLayer.prototype.BUTTON);
         startButton.setPosition(cc.winSize.width/2, cc.winSize.height/4);
 

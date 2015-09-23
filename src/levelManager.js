@@ -1,6 +1,9 @@
 function LevelManager(scene) {
 	this.scene = scene;
 	this.levelIndex = -1;
+	LevelManager.TOTAL_TIME = 0.0;
+	for (var i = 0; i < LevelManager.LEVELS.length; ++i)
+		LevelManager.TOTAL_TIME += LevelManager.LEVELS[i].runTime;
 }
 LevelManager.LEVELS = [
 	{
@@ -78,6 +81,12 @@ LevelManager.prototype.areAllLevelsFinished = function() {
 };
 LevelManager.prototype.getT = function() {
 	return this.elapsedTime / this.time;
+};
+LevelManager.prototype.getTotalT = function() {
+	var et = this.elapsedTime;
+	for (var i = 0; i < this.levelIndex; ++i)
+		et += LevelManager.LEVELS[i].runTime;
+	return et / LevelManager.TOTAL_TIME;
 };
 LevelManager.prototype.lerpT = function(a, b) {
 	return (1.0 - this.getT()) * a + this.getT() * b;
