@@ -1,6 +1,7 @@
 var DialogLayer = cc.Layer.extend({
 	DIALOG_BACKGROUND_ORDER: 100,
-	DIALOG_TEXT_ORDER: 101,
+	DIALOG_TEXT_ORDER: 102,
+	DIALOG_SPEAKERSPRITE_ORDER: 101,
 	STATE: {
 		OPENING: 0,
 		OPEN: 1,
@@ -14,8 +15,10 @@ var DialogLayer = cc.Layer.extend({
 	CLOSING_TIME: 0.5,
 	CLOSED_OFFSET_Y: -100,
 	OPEN_OFFSET_Y: 100,
-	LINE_LENGTH: 27,
+	LINE_LENGTH: 70,
 	LINES_PER_DIALOG: 4,
+	SPEAKER_SPRITE_OFFSET_X: 300,
+	SPEAKER_SPRITE_OFFSET_Y: -10,
 	scene: null,
 	state: null,
 	dialogs: null,
@@ -24,7 +27,8 @@ var DialogLayer = cc.Layer.extend({
 	timer: null,
 	label: null,
 	background: null,
-	ctor: function(scene){
+	dialogueSpriteOnLeft: true,
+	ctor: function(scene) {
 		this._super();
 		
 		this.scene = scene;
@@ -38,6 +42,8 @@ var DialogLayer = cc.Layer.extend({
 		this.label.setColor(0,0,0,0);
 		this.background = new cc.Sprite(res.castle_textbox_png);
 		this.setYOffset(DialogLayer.prototype.CLOSED_OFFSET_Y);
+		this.callback = null;
+		this.speakerSprite = null;
 		
 		this.addChild(this.label, DialogLayer.prototype.DIALOG_TEXT_ORDER);
 		this.addChild(this.background, DialogLayer.prototype.DIALOG_BACKGROUND_ORDER);
@@ -68,18 +74,30 @@ var DialogLayer = cc.Layer.extend({
 				this.setLabelText('');
 				this.timer = 0.0;
 				this.setYOffset(DialogLayer.prototype.CLOSED_OFFSET_Y);
+				if (this.callback != null)
+					this.callback();
 				break;
 			default:
 				throw new Error('Invalid transition state');
 				break;
 		}
 	},
-	openDialog: function(string) {
+	openDialog: function(string, callbackFunc, picture) {
 		this.dialogs = [];
 		var lines = [];
 		var line = '';
 		var index = 0;
 		var toomany = 0;
+		this.callback = callbackFunc;
+		
+		if (this.speakerSprite)
+			this.removeChild(this.speakerSprite);
+		
+		if (picture != null) {
+			this.speakerSprite = new cc.Sprite(picture);
+			this.addChild(this.speakerSprite, DialogLayer.prototype.DIALOG_SPEAKERSPRITE_ORDER);
+		}
+		
 		while (index < string.length) {
 			var nextSpace = string.indexOf(' ', index);
 			var nextNewline = string.indexOf('\n', index);
@@ -138,6 +156,15 @@ var DialogLayer = cc.Layer.extend({
 		var position = cc.p(cc.winSize.width / 2, y);
 		this.label.setPosition(position);
 		this.background.setPosition(position);
+		var speakerOffset;
+		
+		if (this.dialogueSpriteOnLeft)
+			speakerOffset = -DialogLayer.prototype.SPEAKER_SPRITE_OFFSET_X;
+		else
+			speakerOffset = DialogLayer.prototype.SPEAKER_SPRITE_OFFSET_X;
+		
+		if (this.speakerSprite != null)
+			this.speakerSprite.setPosition(cc.winSize.width / 2 + speakerOffset, y + DialogLayer.prototype.SPEAKER_SPRITE_OFFSET_Y);
 	},
 	update: function(dt) {
 		this.timer -= dt;
