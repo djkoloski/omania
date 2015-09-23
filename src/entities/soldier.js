@@ -15,7 +15,7 @@ var Soldier = cc.Node.extend({
 		this.target = vec2();
 		
 		this.sprite = new cc.Sprite();
-		this.spriteAnimation = new cc.Animate(res.spritesheet_soldiers_png_anim);
+		this.spriteAnimation = new cc.Animate(res.SpriteSheets_spritesheet_soldiers_png_anim);
 		this.sprite.runAction(new cc.RepeatForever(this.spriteAnimation));
 		this.addChild(this.sprite, 0);
 		

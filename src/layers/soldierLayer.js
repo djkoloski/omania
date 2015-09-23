@@ -29,6 +29,9 @@ var SoldierLayer = cc.Layer.extend({
 			event: cc.EventListener.KEYBOARD,
 			onKeyPressed: function(key, event) {
 				this.requestFormationType(key);
+			}.bind(this),
+			onKeyReleased: function(key, event) {
+				this.setFormation(FORMATION.CLUMP_CENTER);
 			}.bind(this)
 		});
 		
@@ -49,9 +52,6 @@ var SoldierLayer = cc.Layer.extend({
 	// Takes key press and calls functions to set corresponding formation
 	requestFormationType: function(key) {
 		switch (key) {
-			case cc.KEY.space: // Space
-				this.setFormation(FORMATION.CLUMP_CENTER);
-				break;
 			case cc.KEY.a: // A
 				this.setFormation(FORMATION.LEFT);
 				break;
@@ -70,12 +70,14 @@ var SoldierLayer = cc.Layer.extend({
 	},
 	// Sets the formation of the soldiers
 	setFormation: function(formation) {
-		// Shuffle the soldiers
-		for (var i = 0; i < this.soldiers.length - 2; ++i) {
-			var j = Math.floor(Math.random() * (this.soldiers.length - i)) + i;
-			var temp = this.soldiers[i];
-			this.soldiers[i] = this.soldiers[j];
-			this.soldiers[j] = temp;
+		if (this.formation != formation) {
+			// Shuffle the soldiers
+			for (var i = 0; i < this.soldiers.length - 2; ++i) {
+				var j = Math.floor(Math.random() * (this.soldiers.length - i)) + i;
+				var temp = this.soldiers[i];
+				this.soldiers[i] = this.soldiers[j];
+				this.soldiers[j] = temp;
+			}
 		}
 		
 		var size = cc.winSize;
