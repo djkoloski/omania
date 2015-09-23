@@ -27,8 +27,8 @@ var EndGameLayer = cc.Layer.extend({
         endText.setPosition(cc.winSize.width/2, cc.winSize.height/4);
 
         this.addChild(background, 4);
-        this.addChild(title, 5);
-        this.addChild(endText, 5);
+        this.addChild(title,5);
+        this.addChild(endText, 6);
     },
     endGame: function(key){
         if (key == cc.KEY.r) {
