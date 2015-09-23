@@ -11,21 +11,22 @@
 	"modules" : ["cocos2d"],
 
 	"jsList" : [
-		"src/rigidbody.js",
-		"src/curve.js",
 		"src/animatedSprite.js",
+		"src/curve.js",
 		"src/init.js",
 		"src/resource.js",
-		"src/youtube.js",
+		"src/rigidbody.js",
 		"src/sultan.js",
 		"src/vec.js",
+		"src/youtube.js",
 		"src/entities/soldier.js",
-		"src/scenes/gameScene.js",
-		"src/scenes/startScene.js",
-		"src/scenes/overScene.js",
 		"src/layers/background.js",
-		"src/layers/soldierLayer.js",
+		"src/layers/dangerLayer.js",
 		"src/layers/dialogLayer.js",
-		"src/layers/dangerLayer.js"
+		"src/layers/soldierLayer.js",
+		"src/scenes/endScene.js",
+		"src/scenes/gameScene.js",
+		"src/scenes/overScene.js",
+		"src/scenes/startScene.js"
 	]
 }
