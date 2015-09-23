@@ -15,7 +15,7 @@ var EndGameLayer = cc.Layer.extend({
         this.isKeyboardEnabled = true;
         cc.eventManager.addListener(keyListener, this);
 
-        var background = new cc.Sprite(GameOverLayer.prototype.BACKGROUND);
+        var background = new cc.Sprite(EndGameLayer.prototype.BACKGROUND);
         //var background = new cc.LabelTTF("GAME\nOVER", "Courier New", 144);
         //background.setColor(cc.color(255,230,225,1));
         background.setPosition(cc.winSize.width/2, cc.winSize.height/2);
@@ -27,7 +27,8 @@ var EndGameLayer = cc.Layer.extend({
         endText.setPosition(cc.winSize.width/2, cc.winSize.height/4);
 
         this.addChild(background, 4);
-        this.addChild(endText, 5);
+        this.addChild(title,5);
+        this.addChild(endText, 6);
     },
     endGame: function(key){
         if (key == cc.KEY.r) {
@@ -41,7 +42,7 @@ var EndGameLayer = cc.Layer.extend({
 var EndScene = cc.Scene.extend({
     onEnter:function () {
         this._super();
-        var layer = new GameOverLayer();
+        var layer = new EngGameLayer();
         this.addChild(layer);
     }
 });
