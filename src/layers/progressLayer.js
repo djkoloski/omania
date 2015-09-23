@@ -20,11 +20,11 @@ var ProgressLayer = cc.Layer.extend({
 		this.tanBarImage.setPosition(cc.winSize.width / 2,this.PROGRESS_POS_ON_SCREEN_Y);
 		this.greenBarImage.setPosition(this.tanBarImage.x,this.tanBarImage.y);
 		this.pointerImage.setPosition(this.tanBarImage.x-this.tanBarImage.width / 2 + 115,
-									this.tanBarImage.y+17);
+									this.tanBarImage.y - 20);
 
-		this.addChild(this.tanBarImage);
-		this.addChild(this.greenBarImage);
-		this.addChild(this.pointerImage);
+		this.addChild(this.tanBarImage, 0);
+		this.addChild(this.greenBarImage, 1);
+		this.addChild(this.pointerImage, 2);
 		
 		this.scheduleUpdate();
 	},
@@ -34,7 +34,7 @@ var ProgressLayer = cc.Layer.extend({
 		if (number != null) {
 			var offset=this.BAR_LENGTH*number;
 			this.pointerImage.setPosition(this.tanBarImage.x - this.tanBarImage.width / 2
-				+110 + offset, this.tanBarImage.y + 17);
+				+110 + offset, this.tanBarImage.y - 20);
 
 			this.removeChild(this.greenBarImage);
 			this.greenBarImage= new cc.Sprite(res.progressbar_done_png,
@@ -42,7 +42,7 @@ var ProgressLayer = cc.Layer.extend({
 			this.greenBarImage.setAnchorPoint(0,0);
 			this.greenBarImage.setPosition(this.tanBarImage.x - this.tanBarImage.width/2,
 				this.tanBarImage.y - this.tanBarImage.height / 2);
-			this.addChild(this.greenBarImage, 10);
+			this.addChild(this.greenBarImage, 1);
 
 		}
 	},
