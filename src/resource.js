@@ -31,7 +31,8 @@ var res = {
 	progressbar_done_png: "res/progressbar_done.png",
 	TileGameResources_tmw_desert_spacing_png: "res/TileGameResources/tmw_desert_spacing.png",
 	arrows_png: "res/arrows.png",
-	TileGameResources_TileMap_tmx: "res/TileGameResources/TileMap.tmx"
+	TileGameResources_TileMap_tmx: "res/TileGameResources/TileMap.tmx",
+	background_beach_png: "res/background/beach.png"
 };
 
 var g_resources = [];

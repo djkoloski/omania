@@ -11,9 +11,12 @@ var SoldierLayer = cc.Layer.extend({
 	SOLDIER_ORDER: 50,
 	EDGE_OFFSET: 32,
 	SOLDIER_SPACING: 60,
+	REFRESH_TIME: 2,
 	scene: null,
 	soldiers: null,
 	formation: null,
+	timer: 0.0,
+	refresh: false,
 	ctor: function(scene) {
 		this._super();
 		
@@ -31,6 +34,8 @@ var SoldierLayer = cc.Layer.extend({
 		
 		this.isKeyboardEnabled = true;
 		cc.eventManager.addListener(keyListener, this);
+
+		this.scheduleUpdate();
 	},
 	// Initialize soldiers
 	initSoldiers: function() {
@@ -174,7 +179,8 @@ var SoldierLayer = cc.Layer.extend({
 
 		// Refresh formation after losing men
 		if (newSoldiers.length != oldLength) {
-			this.setFormation(this.formation);
+			this.refresh = true;
+			this.timer = SoldierLayer.prototype.REFRESH_TIME;
 		}
 
 		//GameOver condition
@@ -182,6 +188,17 @@ var SoldierLayer = cc.Layer.extend({
 			window.scene = new GameOverScene();
 			cc.director.runScene(window.scene);
 			console.log("GameOver");
+		}
+	},
+	update: function(dt) {
+		if (this.refresh) {
+			if (this.timer > 0.0) {
+				this.timer -= dt;
+				if (this.timer <= 0.0) {
+					this.setFormation(this.formation);
+					this.refresh = false;
+				}
+			}
 		}
 	}
 });
