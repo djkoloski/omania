@@ -1,7 +1,7 @@
 var StartLayer = cc.Layer.extend({
-    BACKGROUND: res.floor_png,
-    TITLE: res.floor_png,
-    BUTTON: res.floor_png,
+    BACKGROUND: res.StartScreen_start_bckgrnd_png,
+    BUTTON: res.StartScreen_Oman_title_start_png,
+    TITLE: res.StartScreen_omania_title_png,
     ctor: function(scene) {
         this._super();
 
@@ -18,9 +18,9 @@ var StartLayer = cc.Layer.extend({
         var background = new cc.Sprite(StartLayer.prototype.BACKGROUND);
         background.setPosition(cc.winSize.width/2,cc.winSize.height/2);
         var title = new cc.Sprite(StartLayer.prototype.TITLE);
-        title.setPosition(512,412);
-        var startButton = new cc.LabelTTF("Press Spacebar to Play", "Arial", 38);
-        //var startButton = new cc.Sprite(StartLayer.prototype.BUTTON);
+        title.setPosition(512,3*cc.winSize.height/4);
+        //var startButton = new cc.LabelTTF("Press Spacebar to Play", "Arial", 38);
+        var startButton = new cc.Sprite(StartLayer.prototype.BUTTON);
         startButton.setPosition(cc.winSize.width/2, cc.winSize.height/4);
 
         this.addChild(background, 4);

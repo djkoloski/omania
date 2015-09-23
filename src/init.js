@@ -1,6 +1,6 @@
 function Init() {
 	var sheets = [
-		'spritesheet_soldiers_png'
+		'SpriteSheets_spritesheet_soldiers_png'
 	];
 	
 	for (var i = 0; i < sheets.length; ++i)
