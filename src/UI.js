@@ -105,7 +105,7 @@ var TextBoxLayer = cc.Layer.extend({
 		var line = '';
 		var index = 0;
 		var toomany = 0;
-		this.callBack=callbackFunc;
+		this.callBack = callbackFunc;
 		if (picture != null) {
 			this.speakerSprite = new cc.Sprite(picture);
 			this.addChild(this.speakerSprite);
@@ -172,8 +172,8 @@ var TextBoxLayer = cc.Layer.extend({
 		if (this.dialogueSpriteOnLeft)
 			speakerOffset = -this.SPEAKER_SPRITE_OFFSET;
 		else
-			speakerOffset=this.SPEAKER_SPRITE_OFFSET;
-		this.speakerSprite.setPosition(cc.winSize.width/2+speakerOffset, y);
+			speakerOffset = this.SPEAKER_SPRITE_OFFSET;
+		this.speakerSprite.setPosition(cc.winSize.width / 2 +  speakerOffset, y);
 	},
 	update: function(dt) {
 		this.timer -= dt;
