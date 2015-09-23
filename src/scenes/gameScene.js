@@ -12,8 +12,16 @@ var GameScene = cc.Scene.extend({
 	currentDialog: null,
 	currentDialogIndex: null,
 	levelManager: null,
+	pause: false,
 	onEnter: function() {
 		this._super();
+
+		var keyListener = cc.EventListener.create({
+			event: cc.EventListener.KEYBOARD,
+			onKeyPressed: function(key, event) {
+				this.pauseGame(key);
+			}.bind(this)
+		});
 
 		this.backgroundLayer = new BackgroundLayer(this);
 		this.soldierLayer = new SoldierLayer(this);
@@ -23,15 +31,19 @@ var GameScene = cc.Scene.extend({
 
 		this.addChild(this.backgroundLayer);
 		this.addChild(this.soldierLayer);
+		this.addChild(this.progressLayer);
 		this.addChild(this.dangerLayer);
 		this.addChild(this.dialogLayer);
-		this.addChild(this.progressLayer);
+
 		
 		this.state = null;
 		this.levelManager = new LevelManager(this);
 		
 		this.beginDialog(DIALOGS[0]);
-		
+
+		this.isKeyboardEnabled = true;
+		cc.eventManager.addListener(keyListener, this);
+
 		this.scheduleUpdate();
 	},
 	transitionState: function(newState) {
@@ -80,6 +92,19 @@ var GameScene = cc.Scene.extend({
 			this.transitionState(GameScene.prototype.STATE.GAME);
 		else
 			this.runDialog();
+	},
+	pauseGame: function(key){
+		if (key == cc.KEY.p) {
+			if (!GameScene.prototype.pause) {
+				cc.director.pause();
+				GameScene.prototype.pause = true;
+			}
+			else {
+				cc.director.resume();
+				GameScene.prototype.pause = false;
+			}
+			console.log("Pause");
+		}
 	},
 	update: function(dt) {
 		this.progressLayer.movePointer(this.levelManager.getTotalT());
