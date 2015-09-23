@@ -1,9 +1,9 @@
 var FORMATION = {
-	CLUMP_CENTER: 0,
-	LEFT: 1,
-	RIGHT: 2,
-	TOP: 3,
-	BOTTOM: 4
+	LEFT: 0,
+	RIGHT: 1,
+	TOP: 2,
+	BOTTOM: 3,
+	CENTER: 4
 };
 
 var SoldierLayer = cc.Layer.extend({
@@ -23,7 +23,7 @@ var SoldierLayer = cc.Layer.extend({
 		this.scene = scene;
 		
 		this.initSoldiers();
-		this.setFormation(FORMATION.CLUMP_CENTER);
+		this.setFormation(FORMATION.CENTER);
 		
 		var keyListener = cc.EventListener.create({
 			event: cc.EventListener.KEYBOARD,
@@ -31,7 +31,7 @@ var SoldierLayer = cc.Layer.extend({
 				this.requestFormationType(key);
 			}.bind(this),
 			onKeyReleased: function(key, event) {
-				this.setFormation(FORMATION.CLUMP_CENTER);
+				this.setFormation(FORMATION.CENTER);
 			}.bind(this)
 		});
 		
@@ -83,7 +83,7 @@ var SoldierLayer = cc.Layer.extend({
 		var size = cc.winSize;
 
 		switch (formation) {
-			case FORMATION.CLUMP_CENTER:
+			case FORMATION.CENTER:
 				for (var i = 0; i < this.soldiers.length; ++i) {
 					var layer = Math.ceil(Math.sqrt(9 + 12 * i) / 6 - 0.5);
 					if (layer == 0)
@@ -169,6 +169,9 @@ var SoldierLayer = cc.Layer.extend({
 		this.formation = formation;
 	},
 	removeByLambda: function(lambda) {
+		if (g_godMode)
+			return;
+		
 		var oldLength = this.soldiers.length;
 		var newSoldiers = [];
 		for (var i = 0; i < this.soldiers.length; ++i) {

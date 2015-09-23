@@ -43,7 +43,7 @@ var GameScene = cc.Scene.extend({
 				if (!this.levelManager.areAllLevelsFinished())
 					this.levelManager.advanceLevel();
 				else
-					cc.director.runScene(new StartScene());
+					cc.director.runScene(new EndScene());
 				break;
 		}
 	},
@@ -60,7 +60,7 @@ var GameScene = cc.Scene.extend({
 		var message = null;
 		
 		if (speaker == 'Aazaad')
-			image = res.talha_png;
+			image = res.aazaad_png;
 		else if (speaker == 'Talha')
 			image = res.talha_png;
 		
