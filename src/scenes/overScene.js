@@ -7,7 +7,7 @@ var GameOverLayer = cc.Layer.extend({
         var keyListener = cc.EventListener.create({
             event: cc.EventListener.KEYBOARD,
             onKeyPressed: function(key, event) {
-                this.endGame(key);
+                this.gameOver(key);
             }.bind(this)
         });
 
@@ -25,7 +25,7 @@ var GameOverLayer = cc.Layer.extend({
         this.addChild(background, 4);
         this.addChild(gameOverLabel, 5);
     },
-    endGame: function(key){
+    gameOver: function(key){
         if (key == cc.KEY.r) {
             window.scene = new StartScene();
             cc.director.runScene(window.scene);
