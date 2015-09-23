@@ -17,7 +17,7 @@
  *   >>Make your speakerSprite 130x130, please.<<
  *
  *   Speaker sprite can appear on either side. Change which side it
- *   goes on by changing this.ON_YOUR_LEFT (so false puts it on right)
+ *   goes on by changing this.dialogueSpriteOnLeft (so false puts it on right)
  *
  */
 var TextBoxLayer = cc.Layer.extend({
@@ -36,7 +36,6 @@ var TextBoxLayer = cc.Layer.extend({
 	OPEN_OFFSET_Y: 100,
 	LINE_LENGTH: 70,
 	LINES_PER_DIALOG: 4,
-	ON_YOUR_LEFT: false,
 	SPEAKER_SPRITE_OFFSET: 400,
 	state: null,
 	dialogs: null,
@@ -45,6 +44,7 @@ var TextBoxLayer = cc.Layer.extend({
 	timer: null,
 	label: null,
 	background: null,
+	dialogueSpriteOnLeft: true,
 	ctor: function(){
 		this._super();
 		
@@ -56,8 +56,10 @@ var TextBoxLayer = cc.Layer.extend({
 		this.label = new cc.LabelTTF('', 'Arial', 20);
 		this.label.setColor(0,0,0,0);
 		this.background = new cc.Sprite(res.Textbox_png);
-		this.callBack=null;     //both of these variables will
-		this.speakerSprite=null;//be defined when openDialog is called
+		//variables that will receive their values when
+		//openDialog is called
+		this.callBack = null;
+		this.speakerSprite = null;
 		
 		this.addChild(this.label, 5);
 		this.addChild(this.background);
@@ -88,22 +90,23 @@ var TextBoxLayer = cc.Layer.extend({
 				this.setLabelText('');
 				this.timer = 0.0;
 				this.setYOffset(this.CLOSED_OFFSET_Y);
-				if (this.callBack!=null) this.callBack();
+				if (this.callBack != null)
+					this.callBack();
 				break;
 			default:
 				throw new Error('Invalid transition state');
 				break;
 		}
 	},
-	openDialog: function(string, F, picture) {
+	openDialog: function(string, callbackFunc, picture) {
 		//make the picture 300x300 for best quality
 		this.dialogs = [];
 		var lines = [];
 		var line = '';
 		var index = 0;
 		var toomany = 0;
-		this.callBack=F;
-		if (picture!=null) {
+		this.callBack=callbackFunc;
+		if (picture != null) {
 			this.speakerSprite = new cc.Sprite(picture);
 			this.addChild(this.speakerSprite);
 		}
@@ -166,10 +169,11 @@ var TextBoxLayer = cc.Layer.extend({
 		this.label.setPosition(position);
 		this.background.setPosition(position);
 		var speakerOffset;
-		if (this.ON_YOUR_LEFT) speakerOffset=-this.SPEAKER_SPRITE_OFFSET;
-		else speakerOffset=this.SPEAKER_SPRITE_OFFSET;
-		var position2=cc.p(cc.winSize.width/2+speakerOffset, y);
-		this.speakerSprite.setPosition(position2);
+		if (this.dialogueSpriteOnLeft)
+			speakerOffset = -this.SPEAKER_SPRITE_OFFSET;
+		else
+			speakerOffset=this.SPEAKER_SPRITE_OFFSET;
+		this.speakerSprite.setPosition(cc.winSize.width/2+speakerOffset, y);
 	},
 	update: function(dt) {
 		this.timer -= dt;
