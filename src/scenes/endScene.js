@@ -38,7 +38,7 @@ var EndGameLayer = cc.Layer.extend({
     }
 });
 
-var GameOverScene = cc.Scene.extend({
+var EndScene = cc.Scene.extend({
     onEnter:function () {
         this._super();
         var layer = new GameOverLayer();

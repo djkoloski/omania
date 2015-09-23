@@ -13,7 +13,9 @@
 	"jsList" : [
 		"src/animatedSprite.js",
 		"src/curve.js",
+		"src/dialogs.js",
 		"src/init.js",
+		"src/levelManager.js",
 		"src/resource.js",
 		"src/rigidbody.js",
 		"src/sultan.js",
