@@ -42,8 +42,10 @@ var GameScene = cc.Scene.extend({
 			case GameScene.prototype.STATE.GAME:
 				if (!this.levelManager.areAllLevelsFinished())
 					this.levelManager.advanceLevel();
-				else
+				else {
+					window.g_score = soldierLayer.soldiers.length;
 					cc.director.runScene(new EndScene());
+				}
 				break;
 		}
 	},
