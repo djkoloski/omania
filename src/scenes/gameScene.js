@@ -11,6 +11,7 @@ var GameScene = cc.Scene.extend({
 	dialogLayer: null,
 	backgroundLayer: null,
 	hudLayer: null,
+	progressLayer: null,
 	dangerTimer: null,
 	levelTimer: null,
 	onEnter: function() {
@@ -20,12 +21,14 @@ var GameScene = cc.Scene.extend({
 		this.soldierLayer = new SoldierLayer(this);
 		this.dangerLayer = new DangerLayer(this);
 		this.dialogLayer = new DialogLayer(this);
+		this.progressLayer = new ProgressLayer(this);
 		//this.hudLayer = new HUDLayer(this);
 
 		this.addChild(this.backgroundLayer);
 		this.addChild(this.soldierLayer);
 		this.addChild(this.dangerLayer);
 		this.addChild(this.dialogLayer);
+		this.addChild(this.progressLayer);
 		//this.addChild(this.hudLayer);
 
 		this.dangerTimer = this.DANGER_TIME;
