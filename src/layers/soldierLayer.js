@@ -61,8 +61,11 @@ var SoldierLayer = cc.Layer.extend({
 			case cc.KEY.w: // W
 				this.setFormation(FORMATION.TOP);
 				break;
-			case cc.KEY.s: // F
+			case cc.KEY.s: // S
 				this.setFormation(FORMATION.BOTTOM);
+				break;
+			case cc.KEY.g: // G
+				g_godMode = !g_godMode;
 				break;
 			default:
 				break;
