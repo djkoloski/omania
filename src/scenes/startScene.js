@@ -13,9 +13,13 @@ var StartLayer = cc.Layer.extend({
         cc.eventManager.addListener(keyListener, this);
 
         var helloLabel = new cc.LabelTTF("Press Spacebar to Play", "Arial", 38);
+        //helloLabel.setColor(0,0,0);
         helloLabel.x = cc.winSize.width/2;
         helloLabel.y = cc.winSize.height/2;
 
+        //backframe=new cc.Sprite(res.Start_png);
+        //backframe.setPosition(cc.winSize.width / 2, cc.winSize.height / 2);
+        //this.addChild(backframe);
         this.addChild(helloLabel, 5);
     },
     startGame: function(key){
