@@ -19,7 +19,6 @@ var StartLayer = cc.Layer.extend({
         background.setPosition(cc.winSize.width/2,cc.winSize.height/2);
         var title = new cc.Sprite(StartLayer.prototype.TITLE);
         title.setPosition(512,3*cc.winSize.height/4);
-        //var startButton = new cc.LabelTTF("Press Spacebar to Play", "Arial", 38);
         var startButton = new cc.Sprite(StartLayer.prototype.BUTTON);
         startButton.setPosition(cc.winSize.width/2, cc.winSize.height/4);
 
@@ -29,7 +28,6 @@ var StartLayer = cc.Layer.extend({
     },
     startGame: function(key){
         if (key == cc.KEY.space) {
-            //cc.director.pushScene(StartScene);
             window.scene = new GameScene();
             cc.director.runScene(window.scene);
             console.log("Start");

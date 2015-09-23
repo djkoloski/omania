@@ -1,6 +1,5 @@
 var GameOverLayer = cc.Layer.extend({
     BACKGROUND: res.boulder_png,
-    TEXT: res.floor_png,
     ctor: function(scene) {
         this._super();
 
@@ -20,7 +19,6 @@ var GameOverLayer = cc.Layer.extend({
         text.setColor(cc.color(255,230,225,1));
         text.setPosition(cc.winSize.width/2, 3*cc.winSize.height/4);
         var gameOverLabel = new cc.LabelTTF("Press R to Restart", "Arial", 38);
-        //var gameOverLabel = new cc.Sprite(GameOverLayer.prototype.TEXT);
         gameOverLabel.setPosition(cc.winSize.width/2, cc.winSize.height/4);
 
         this.addChild(background, 4);
