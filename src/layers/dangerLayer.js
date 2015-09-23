@@ -91,6 +91,7 @@ var Danger = cc.Node.extend({
 				// TODO: take this out when everything has a hitting sprite
 				if (this.hittingSprite)
 					this.hittingSprite.setVisible(false);
+				break;
 			case Danger.prototype.STATE.HITTING:
 				this.warningSprite.setVisible(false);
 				// TODO: take this out when everything has a hitting sprite
