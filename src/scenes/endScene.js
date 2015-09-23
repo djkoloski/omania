@@ -15,8 +15,11 @@ var EndGameLayer = cc.Layer.extend({
 
         var background = new cc.Sprite(EndGameLayer.prototype.BACKGROUND);
         background.setPosition(cc.winSize.width/2, cc.winSize.height/2);
+        var score = new cc.LabelTTF("Score: " + g_score,"Courier New", 75);
+        score.setPosition(cc.winSize.width/2, cc.winSize.height/4);
 
         this.addChild(background, 4);
+        this.addChild(score,5);
     },
     endGame: function(key){
         if (key == cc.KEY.r) {
